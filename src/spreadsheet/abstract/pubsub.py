@@ -6,7 +6,11 @@ from spreadsheet.abstract.cell_value import CellTable
 
 class Subscriber(ABC):
     @abstractmethod
-    def on_next(self, data: CellTable):
+    def on_update(self, old_data: CellTable, new_data: CellTable):
+        raise NotImplemented
+
+    @abstractmethod
+    def on_subscribe(self, data: CellTable):
         raise NotImplemented
 
     @abstractmethod
@@ -15,6 +19,10 @@ class Subscriber(ABC):
 
 
 class Publisher(ABC):
+    @abstractmethod
+    def notify(self):
+        raise NotImplemented
+
     @abstractmethod
     def subscribe(self, sub: Union['Pubsub', list['Pubsub']]):
         raise NotImplemented

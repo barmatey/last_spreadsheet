@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 from pydantic import Field
 
 from spreadsheet.abstract.command import Command
-from spreadsheet.formula.plan_items import PlanItems, PlanItemsPubsubUsecase
-from spreadsheet.formula.sourted_table import SortedTable, SortedTablePubsubUsecase
-from spreadsheet.wire.bootstrap import WireBootstrap, WireUniquesUsecase
+from spreadsheet.formula.plan_items import PlanItems, PlanItemsPubsub
+from spreadsheet.formula.sourted_table import SortedTable, SortedTablePubsub
+from spreadsheet.wire.bootstrap import WireBootstrap, WirePubsub
 from spreadsheet.wire.entity import Ccol
 
 from spreadsheet.formula.bootstrap import FormulaBootstrap
@@ -22,23 +22,18 @@ class CreateGroupSheet(Command):
         wire_repo = WireBootstrap().get_repo()
 
         # Create PlanItems
-        plan_items = PlanItems()
+        plan_items = PlanItems(ccols=self.ccols)
         formula_repo.add(plan_items)
-        plan_items_pubsub = PlanItemsPubsubUsecase(plan_items, formula_repo)
+        plan_items_pubsub = PlanItemsPubsub(plan_items, formula_repo)
 
-        # Subscribe plan items on wires
-        WireUniquesUsecase(
+        # Subscribe PlanItems on wires
+        WirePubsub(
             wires=wire_repo.get_filtred({"source_id": self.source_id}),
-            ccols=self.ccols,
             repo=wire_repo).subscribe(plan_items_pubsub)
 
-        # Create SortedTable
+        # Create SortedTable and subscribe SortedTable on PlanItems
         sorted_table = SortedTable()
         formula_repo.add(sorted_table)
-        sorted_table_pubsub = SortedTablePubsubUsecase(sorted_table, formula_repo)
-
-        # Subscribe SortedTable on PlanItems
+        sorted_table_pubsub = SortedTablePubsub(sorted_table, formula_repo)
         plan_items_pubsub.subscribe(sorted_table_pubsub)
 
-        print(formula_repo.get_all()[0].utable)
-        print(formula_repo.get_all()[1].sorted_data)

@@ -1,7 +1,7 @@
 from spreadsheet.wire.entity import Wire, Ccol
 from src.helpers.decorators import singleton
 from .repository import WireRepo, WireRepoFake
-from .usecase import WireCrudUsecase, WireUniquesUsecase
+from .usecase import WireCrudUsecase, WirePubsub
 
 
 @singleton
@@ -16,5 +16,5 @@ class WireBootstrap:
     def get_crud_usecase(self) -> WireCrudUsecase:
         return WireCrudUsecase(self.__repo)
 
-    def get_wire_uniques_usecase(self, wires: list[Wire], ccols: list[Ccol]) -> WireUniquesUsecase:
-        return WireUniquesUsecase(wires, ccols, self.__repo)
+    def get_wire_uniques_usecase(self, wires: list[Wire], ccols: list[Ccol]) -> WirePubsub:
+        return WirePubsub(wires, ccols, self.__repo)

@@ -18,16 +18,22 @@ class SortedTable(Formula):
     uuid: UUID = Field(default_factory=uuid4)
 
 
-class SortedTablePubsubUsecase(Pubsub):
+class SortedTablePubsub(Pubsub):
     def __init__(self, entity: SortedTable, repo: FormulaRepo):
         self._repo = repo
         self._entity = entity
 
+    def notify(self):
+        raise NotImplemented
+
     def subscribe(self, sub: Union['Pubsub', list['Pubsub']]):
         raise NotImplemented
 
-    def on_next(self, data: CellTable):
+    def on_subscribe(self, data: CellTable):
         self._entity.unsorted_data.extend(data)
+
+    def on_update(self, old_data: CellTable, new_data: CellTable):
+        raise NotImplemented
 
     def on_complete(self):
         self.__sort_table()
