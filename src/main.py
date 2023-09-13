@@ -1,8 +1,12 @@
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from uuid import uuid4
+from spreadsheet.sheet.commands import CreateGroupSheet
+
+
+def print_hi():
+    cmd = CreateGroupSheet(source_id=uuid4(), ccols=['sender', 'sub1'])
+    cmd.execute()
 
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    print_hi()
 
