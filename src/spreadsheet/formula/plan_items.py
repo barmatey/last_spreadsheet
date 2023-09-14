@@ -48,7 +48,6 @@ class PlanItemsPubsub(Pubsub):
             self._entity.uniques[key] += 1
 
     def on_update(self, old_data: Wire, new_data: Wire):
-        logger.debug('on_updated')
         old_row = [old_data.__getattribute__(ccol) for ccol in self._entity.ccols]
         old_key = str(old_row)
 
@@ -75,3 +74,4 @@ class PlanItemsPubsub(Pubsub):
 
     def on_complete(self):
         self._repo.update(self._entity)
+        logger.success(self._entity.uniques["[20.1, 'нераспределенныепопроектам']"])

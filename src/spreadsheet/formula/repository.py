@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
+from uuid import UUID
 
 from loguru import logger
 
@@ -15,6 +17,10 @@ class FormulaRepo(ABC):
         raise NotImplemented
 
     @abstractmethod
+    def get_by_id(self, uuid: UUID) -> Formula:
+        raise NotImplemented
+
+    @abstractmethod
     def update(self, entity: Formula):
         raise NotImplemented
 
@@ -24,7 +30,16 @@ class FormulaRepoFake(FormulaRepo):
         self._data: list[Formula] = []
 
     def add(self, entity: Formula):
+        for formula in self._data:
+            if formula.uuid == entity.uuid:
+                raise ValueError(f'the {formula.uuid} already exist')
         self._data.append(entity)
+
+    def get_by_id(self, uuid: UUID) -> Formula:
+        for formula in self._data:
+            if formula.uuid == uuid:
+                return formula
+        raise LookupError
 
     def get_all(self) -> list[Formula]:
         return self._data

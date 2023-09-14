@@ -37,7 +37,7 @@ class SortedTablePubsub(Pubsub):
 
     def on_complete(self):
         self.__sort_table()
-        self._repo.add(self._entity)
+        self._repo.update(self._entity)
 
     def __sort_table(self):
         table = pd.DataFrame(self._entity.unsorted_data)

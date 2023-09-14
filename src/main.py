@@ -1,4 +1,3 @@
-from copy import deepcopy
 from uuid import uuid4
 
 from loguru import logger
@@ -7,6 +6,7 @@ from spreadsheet.formula.bootstrap import FormulaBootstrap
 from spreadsheet.sheet.commands import CreateGroupSheet
 from spreadsheet.wire.bootstrap import WireBootstrap
 from spreadsheet.wire.commands import UpdateWire
+from spreadsheet.wire.entity import Wire
 from spreadsheet.wire.repository import WireRepo
 
 
@@ -17,15 +17,15 @@ def print_hi():
     cmd.execute()
 
     wire_repo: WireRepo = WireBootstrap().get_repo()
-    data = deepcopy(wire_repo.get_all()[0])
-    data.sender = -111_000_000
-    data = data.model_dump()
-    data['wire_id'] = data.pop('uuid')
+    old_wire = wire_repo.get_all()[0]
 
-    cmd = UpdateWire(**data)
+    cmd = UpdateWire(wire_id=old_wire.uuid, sender=-111_111_111)
     cmd.execute()
 
-    for row in formula_repo.get_all()[0].utable:
+    logger.success(len(formula_repo.get_all()))
+    plan_items = formula_repo.get_all()[0]
+
+    for row in plan_items.utable:
         logger.info(row)
 
 

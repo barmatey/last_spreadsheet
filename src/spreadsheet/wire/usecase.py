@@ -1,5 +1,7 @@
 from typing import Union
 
+from loguru import logger
+
 from spreadsheet.abstract.pubsub import Pubsub, Publisher
 from .entity import Wire
 from .repository import WireRepo
