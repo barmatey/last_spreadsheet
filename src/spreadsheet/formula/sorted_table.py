@@ -23,6 +23,9 @@ class SortedTablePubsub(Pubsub):
         self._repo = repo
         self._entity = entity
 
+    def __repr__(self):
+        return "SortedTablePubsub"
+
     def notify(self):
         raise NotImplemented
 

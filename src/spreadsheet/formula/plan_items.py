@@ -1,6 +1,7 @@
 from typing import Union
 from uuid import UUID, uuid4
 
+from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.cell_value import CellTable
@@ -34,8 +35,10 @@ class PlanItemsPubsub(Pubsub):
             subs = [subs]
         for sub in subs:
             sub.on_subscribe(self._entity.utable)
+            self._entity.subs.append(sub)
         for sub in subs:
             sub.on_complete()
+        self._repo.update(self._entity)
 
     def on_subscribe(self, data: Wire):
         row = [data.__getattribute__(ccol) for ccol in self._entity.ccols]
@@ -73,3 +76,4 @@ class PlanItemsPubsub(Pubsub):
 
     def on_complete(self):
         self._repo.update(self._entity)
+        logger.info(f"PlanItems.on_complete(). I have to update next subs: {self._entity.subs}")

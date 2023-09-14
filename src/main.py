@@ -22,11 +22,6 @@ def print_hi():
     cmd = UpdateWire(wire_id=old_wire.uuid, sender=-111_111_111)
     cmd.execute()
 
-    plan_items = formula_repo.get_all()[0]
-
-    for row in plan_items.utable:
-        logger.info(row)
-
 
 if __name__ == '__main__':
     print_hi()

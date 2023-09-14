@@ -4,7 +4,7 @@ from pydantic import Field
 
 from spreadsheet.abstract.command import Command
 from spreadsheet.formula.plan_items import PlanItems, PlanItemsPubsub
-from spreadsheet.formula.sourted_table import SortedTable, SortedTablePubsub
+from spreadsheet.formula.sorted_table import SortedTable, SortedTablePubsub
 from spreadsheet.wire.bootstrap import WireBootstrap, WirePubsub
 from spreadsheet.wire.entity import Ccol
 

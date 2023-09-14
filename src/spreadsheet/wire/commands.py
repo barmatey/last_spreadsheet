@@ -1,4 +1,4 @@
-from copy import deepcopy, copy
+from copy import copy
 from typing import Optional
 from uuid import UUID, uuid4
 from datetime import datetime
@@ -7,10 +7,8 @@ from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.command import Command
-from spreadsheet.formula.bootstrap import FormulaBootstrap
-from spreadsheet.formula.repository import FormulaRepo
 from spreadsheet.wire.bootstrap import WireBootstrap, WireRepo
-from spreadsheet.wire.usecase import WirePubsub, UpdateWireSubs
+from spreadsheet.wire.usecase import UpdateWireSubs
 
 
 class UpdateWire(Command):
@@ -27,6 +25,7 @@ class UpdateWire(Command):
     uuid: UUID = Field(default_factory=uuid4)
 
     def execute(self):
+        logger.debug("UpdateWire.execute()")
         wire_repo: WireRepo = WireBootstrap().get_repo()
         wire = wire_repo.get_by_id(self.wire_id)
         old_wire = copy(wire)
