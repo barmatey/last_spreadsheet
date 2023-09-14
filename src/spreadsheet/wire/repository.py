@@ -36,7 +36,7 @@ class WireRepo(ABC):
 
 class WireRepoFake(WireRepo):
     def __init__(self):
-        path = Path("D:/facc_sheet/tests/files/sarmat.csv")
+        path = Path("D:/Projects/spreadsheet/tests/files/sarmat.csv")
         df = pd.read_csv(path).head(100)
         df['date'] = pd.to_datetime(df['date'])
         df['amount'] = df['debit'] - df['credit']

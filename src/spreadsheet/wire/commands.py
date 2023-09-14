@@ -35,6 +35,3 @@ class UpdateWire(Command):
         wire_repo.update(wire)
 
         UpdateWireSubs(old_wire, wire).notify()
-
-        self.next_commands = []
-
