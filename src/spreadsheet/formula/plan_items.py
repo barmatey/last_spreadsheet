@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Union
 from uuid import UUID, uuid4
 
@@ -24,56 +25,61 @@ class PlanItems(Formula):
 
 class PlanItemsPubsub(Pubsub):
     def __init__(self, entity: PlanItems, repo: FormulaRepo):
-        self._entity = entity
+        self._old_entity = entity
+        self._new_entity = copy(entity)
         self._repo = repo
 
     def notify(self):
-        raise NotImplemented
+        for sub in self._new_entity.subs:
+            sub.on_update(self._old_entity.utable, self._new_entity.utable)
+        for sub in self._new_entity.subs:
+            sub.on_complete()
 
     def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
         if not isinstance(subs, list):
             subs = [subs]
         for sub in subs:
-            sub.on_subscribe(self._entity.utable)
-            self._entity.subs.append(sub)
+            sub.on_subscribe(self._new_entity.utable)
+            self._new_entity.subs.append(sub)
         for sub in subs:
             sub.on_complete()
-        self._repo.update(self._entity)
+        self._repo.update(self._new_entity)
 
     def on_subscribe(self, data: Wire):
-        row = [data.__getattribute__(ccol) for ccol in self._entity.ccols]
+        row = [data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         key = str(row)
-        if self._entity.uniques.get(key) is None:
-            self._entity.utable.append(row)
-            self._entity.uniques[key] = 1
+        if self._new_entity.uniques.get(key) is None:
+            self._new_entity.utable.append(row)
+            self._new_entity.uniques[key] = 1
         else:
-            self._entity.uniques[key] += 1
+            self._new_entity.uniques[key] += 1
 
     def on_update(self, old_data: Wire, new_data: Wire):
-        old_row = [old_data.__getattribute__(ccol) for ccol in self._entity.ccols]
+        old_row = [old_data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         old_key = str(old_row)
 
-        new_row = [new_data.__getattribute__(ccol) for ccol in self._entity.ccols]
+        new_row = [new_data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         new_key = str(new_row)
 
-        utable = self._entity.utable
+        utable = self._new_entity.utable
         # Drop old value
-        self._entity.uniques[old_key] -= 1
+        self._new_entity.uniques[old_key] -= 1
 
-        if self._entity.uniques[old_key] == 0:
-            del self._entity.uniques[old_key]
+        if self._new_entity.uniques[old_key] == 0:
+            del self._new_entity.uniques[old_key]
             for i, row in enumerate(utable):
                 if str(row) == old_key:
                     utable[i] = new_row
                     return
             raise LookupError
 
-        if self._entity.uniques.get(new_key) is not None:
-            self._entity.uniques[new_key] += 1
+        if self._new_entity.uniques.get(new_key) is not None:
+            self._new_entity.uniques[new_key] += 1
             return
-        self._entity.uniques[new_key] = 1
+        self._new_entity.uniques[new_key] = 1
         utable.append(new_row)
 
     def on_complete(self):
-        self._repo.update(self._entity)
-        logger.info(f"PlanItems.on_complete() => updating subs: {self._entity.subs}")
+        self._repo.update(self._new_entity)
+        logger.info(f"PlanItemsPubsub.on_complete() => updating subs: {self._new_entity.subs}")
+        self.notify()

@@ -1,10 +1,9 @@
 from copy import copy
-from typing import Union
 from uuid import UUID
 
 from loguru import logger
 
-from spreadsheet.abstract.pubsub import Pubsub, Publisher
+from spreadsheet.abstract.pubsub import Pubsub
 from .entity import Wire
 from .repository import WireRepo
 from ..abstract.cell_value import CellTable

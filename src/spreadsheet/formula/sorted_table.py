@@ -1,7 +1,9 @@
+from copy import copy, deepcopy
 from typing import Union
 from uuid import UUID, uuid4
 
 import pandas as pd
+from loguru import logger
 from pydantic import Field
 
 from .entity import Formula
@@ -21,7 +23,14 @@ class SortedTable(Formula):
 class SortedTablePubsub(Pubsub):
     def __init__(self, entity: SortedTable, repo: FormulaRepo):
         self._repo = repo
-        self._entity = entity
+        self._old_entity = entity
+        self._new_entity = SortedTable(
+            uuid=entity.uuid,
+            unsorted_data=deepcopy(entity.unsorted_data),
+            sorted_data=deepcopy(entity.sorted_data),
+            asc=entity.asc,
+            subs=entity.subs,
+        )
 
     def __repr__(self):
         return "SortedTablePubsub"
@@ -33,16 +42,17 @@ class SortedTablePubsub(Pubsub):
         raise NotImplemented
 
     def on_subscribe(self, data: CellTable):
-        self._entity.unsorted_data.extend(data)
+        self._new_entity.unsorted_data = data
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
-        raise NotImplemented
+        self._new_entity.unsorted_data = new_data
 
     def on_complete(self):
         self.__sort_table()
-        self._repo.update(self._entity)
+        self._repo.update(self._new_entity)
+        logger.info(f"SortedTablePubsub.on_complete() => updating subs: {self._new_entity.subs}")
 
     def __sort_table(self):
-        table = pd.DataFrame(self._entity.unsorted_data)
-        table = table.sort_values(list(table.columns), ascending=self._entity.asc).values
-        self._entity.sorted_data = table
+        table = pd.DataFrame(self._new_entity.unsorted_data)
+        table = table.sort_values(list(table.columns), ascending=self._new_entity.asc).values
+        self._new_entity.sorted_data = table
