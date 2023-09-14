@@ -1,8 +1,12 @@
 from uuid import UUID, uuid4
 
+from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.command import Command
+from spreadsheet.cell.bootstrap import CellBootstrap
+from spreadsheet.cell.repository import CellRepo
+from spreadsheet.cell import usecase as cell_usecase
 from spreadsheet.formula.collection.plan_items import PlanItems, PlanItemsPubsub
 from spreadsheet.formula.repository import FormulaRepo
 from spreadsheet.formula.collection.sorted_table import SortedTable, SortedTablePubsub
@@ -24,6 +28,7 @@ class CreateGroupSheet(Command):
         # Repositories
         formula_repo: FormulaRepo = FormulaBootstrap().get_repo()
         wire_repo: WireRepo = WireBootstrap().get_repo()
+        cell_repo: CellRepo = CellBootstrap().get_repo()
         sheet_repo: SheetRepo = SheetBootstrap().get_repo()
 
         # Create PlanItems
@@ -43,7 +48,10 @@ class CreateGroupSheet(Command):
         plan_items_pubsub.subscribe(sorted_table_pubsub)
 
         # Create sheet
-        # size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
+        size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
+        cells = cell_usecase.CreateTable(cell_repo).set_size(size).set_values(plan_items_pubsub.get_entity().utable).create()
+        logger.success(f'\n{table}')
+
         # (CreateSheet(sheet_repo)
         #  .set_title("main")
         #  .set_size(size)
