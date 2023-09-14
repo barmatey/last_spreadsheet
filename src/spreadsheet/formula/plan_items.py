@@ -1,7 +1,6 @@
 from typing import Union
 from uuid import UUID, uuid4
 
-from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.cell_value import CellTable
@@ -74,4 +73,3 @@ class PlanItemsPubsub(Pubsub):
 
     def on_complete(self):
         self._repo.update(self._entity)
-        logger.success(self._entity.uniques["[20.1, 'нераспределенныепопроектам']"])

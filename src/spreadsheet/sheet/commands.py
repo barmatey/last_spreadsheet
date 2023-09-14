@@ -36,4 +36,3 @@ class CreateGroupSheet(Command):
         formula_repo.add(sorted_table)
         sorted_table_pubsub = SortedTablePubsub(sorted_table, formula_repo)
         plan_items_pubsub.subscribe(sorted_table_pubsub)
-

@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import deepcopy, copy
 from typing import Optional
 from uuid import UUID, uuid4
 from datetime import datetime
@@ -7,6 +7,8 @@ from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.command import Command
+from spreadsheet.formula.bootstrap import FormulaBootstrap
+from spreadsheet.formula.repository import FormulaRepo
 from spreadsheet.wire.bootstrap import WireBootstrap, WireRepo
 from spreadsheet.wire.usecase import WirePubsub, UpdateWireSubs
 
@@ -27,7 +29,7 @@ class UpdateWire(Command):
     def execute(self):
         wire_repo: WireRepo = WireBootstrap().get_repo()
         wire = wire_repo.get_by_id(self.wire_id)
-        old_wire = deepcopy(wire)
+        old_wire = copy(wire)
 
         data = self.model_dump(exclude_none=True, exclude={"uuid", "wire_id"})
         for key, value in data.items():
