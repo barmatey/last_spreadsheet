@@ -56,6 +56,9 @@ class WirePubsub(Pubsub):
         self._repo = repo
         self._wires = wires if isinstance(wires, list) else [wires]
 
+    def get_entity(self):
+        raise NotImplemented
+
     def notify(self):
         for wire in self._wires:
             for sub in wire.subs:

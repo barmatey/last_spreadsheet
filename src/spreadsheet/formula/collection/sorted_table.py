@@ -6,10 +6,10 @@ import pandas as pd
 from loguru import logger
 from pydantic import Field
 
-from .entity import Formula
-from .repository import FormulaRepo
-from ..abstract.cell_value import CellTable
-from ..abstract.pubsub import Pubsub
+from spreadsheet.formula.entity import Formula
+from spreadsheet.formula.repository import FormulaRepo
+from spreadsheet.abstract.cell_value import CellTable
+from spreadsheet.abstract.pubsub import Pubsub
 
 
 class SortedTable(Formula):
@@ -34,6 +34,9 @@ class SortedTablePubsub(Pubsub):
 
     def __repr__(self):
         return "SortedTablePubsub"
+
+    def get_entity(self):
+        return self._new_entity
 
     def notify(self):
         raise NotImplemented

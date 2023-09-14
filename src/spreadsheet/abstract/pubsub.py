@@ -20,6 +20,10 @@ class Subscriber(ABC):
 
 class Publisher(ABC):
     @abstractmethod
+    def get_entity(self):
+        raise NotImplemented
+
+    @abstractmethod
     def notify(self):
         raise NotImplemented
 

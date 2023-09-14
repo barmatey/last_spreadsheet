@@ -29,6 +29,9 @@ class PlanItemsPubsub(Pubsub):
         self._new_entity = copy(entity)
         self._repo = repo
 
+    def get_entity(self):
+        return self._new_entity
+
     def notify(self):
         for sub in self._new_entity.subs:
             sub.on_update(self._old_entity.utable, self._new_entity.utable)
