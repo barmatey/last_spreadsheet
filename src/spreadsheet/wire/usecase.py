@@ -1,4 +1,6 @@
+from copy import copy
 from typing import Union
+from uuid import UUID
 
 from loguru import logger
 
@@ -25,12 +27,24 @@ class WireCrudUsecase:
         raise NotImplemented
 
 
-class UpdateWireSubs:
-    def __init__(self, old_wire: Wire, new_wire: Wire):
-        self._old_wire = old_wire
-        self._new_wire = new_wire
+class UpdateWire:
+    def __init__(self, repo: WireRepo):
+        self._repo = repo
+        self._old_wire: Wire | None = None
+        self._new_wire: Wire | None = None
 
-    def notify(self):
+    def load_entity_by_id(self, uuid: UUID) -> 'UpdateWire':
+        self._old_wire = self._repo.get_by_id(uuid)
+        self._new_wire = copy(self._old_wire)
+        return self
+
+    def update(self, data: dict) -> 'UpdateWire':
+        for key, value in data.items():
+            self._new_wire.__setattr__(key, value)
+        self._repo.update(self._new_wire)
+        return self
+
+    def notify_subscribers(self):
         subs = self._old_wire.subs
         for sub in subs:
             sub.on_update(self._old_wire, self._new_wire)

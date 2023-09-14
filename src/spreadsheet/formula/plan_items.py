@@ -76,4 +76,4 @@ class PlanItemsPubsub(Pubsub):
 
     def on_complete(self):
         self._repo.update(self._entity)
-        logger.info(f"PlanItems.on_complete(). I have to update next subs: {self._entity.subs}")
+        logger.info(f"PlanItems.on_complete() => updating subs: {self._entity.subs}")

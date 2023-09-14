@@ -8,7 +8,7 @@ from pydantic import Field
 
 from spreadsheet.abstract.command import Command
 from spreadsheet.wire.bootstrap import WireBootstrap, WireRepo
-from spreadsheet.wire.usecase import UpdateWireSubs
+from spreadsheet.wire.usecase import UpdateWire as UpdateWireUsecase
 
 
 class UpdateWire(Command):
@@ -27,12 +27,6 @@ class UpdateWire(Command):
     def execute(self):
         logger.debug("UpdateWire.execute()")
         wire_repo: WireRepo = WireBootstrap().get_repo()
-        wire = wire_repo.get_by_id(self.wire_id)
-        old_wire = copy(wire)
-
         data = self.model_dump(exclude_none=True, exclude={"uuid", "wire_id"})
-        for key, value in data.items():
-            wire.__setattr__(key, value)
-        wire_repo.update(wire)
+        UpdateWireUsecase(wire_repo).load_entity_by_id(self.wire_id).update(data).notify_subscribers()
 
-        UpdateWireSubs(old_wire, wire).notify()
