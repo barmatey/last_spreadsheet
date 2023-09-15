@@ -23,12 +23,6 @@ from spreadsheet.formula.bootstrap import FormulaBootstrap
 from spreadsheet.wire.repository import WireRepo
 
 
-def print_table(cells: list[Cell], size: tuple[int, int]):
-    cells = deepcopy(cells)
-    for cell in cells:
-        print(f"{cell.index}: \t {cell.value}")
-
-
 class CreateGroupSheet(Command):
     source_id: UUID
     ccols: list[Ccol]
@@ -60,7 +54,7 @@ class CreateGroupSheet(Command):
         plan_items_pubsub.subscribe(sorted_table_pubsub)
 
         # Create sheet
-        size = (len(plan_items_pubsub.get_entity().utable), 1 + 2*len(plan_items_pubsub.get_entity().utable[0]))
+        size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
         sheet_id = uuid4()
         cell_usecase.CreateTable(sheet_id, size, cell_repo).execute()
         target_cell = cell_repo.get_filtred({"sheet_id": sheet_id, "index": (0, 0)})[0]
@@ -68,4 +62,3 @@ class CreateGroupSheet(Command):
 
         sorted_table_pubsub.subscribe(cell_pubsub)
 
-        cells = cell_repo.get_filtred({"sheet_id": sheet_id})

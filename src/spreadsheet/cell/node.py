@@ -1,11 +1,10 @@
-import typing
-from collections import deque
 from typing import Union
 
 from loguru import logger
 
 from spreadsheet.abstract.cell_value import CellTable
 from spreadsheet.abstract.pubsub import Pubsub
+
 from .entity import Cell
 from .repository import CellRepo
 from .usecase import UpdateCellValue
@@ -31,7 +30,10 @@ class CellPubsub(Pubsub):
         raise NotImplemented
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
-        raise NotImplemented
+        logger.warning("CellNode.on_update()")
+        logger.info(f"new_data len: {len(new_data)* len(new_data[0])}")
+        logger.info(f"in_repo: {len(self._repo.get_all())}")
+        self.on_subscribe(new_data)
 
     def on_subscribe(self, data: CellTable):
         if len(data) == 1 and len(data[0]) == 1:

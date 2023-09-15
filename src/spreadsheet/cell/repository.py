@@ -52,7 +52,7 @@ class CellRepoFake(CellRepo):
         for cell in self._data:
             if cell.sheet_id == sheet_id and cell.index == index:
                 return cell
-        raise LookupError
+        raise LookupError(f"index={index}")
 
     def get_filtred(self, filter_by: dict, order_by: list[str] = None, asc=True) -> list[Cell]:
         result = []
