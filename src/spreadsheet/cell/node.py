@@ -8,13 +8,15 @@ from spreadsheet.abstract.pubsub import Pubsub
 from .entity import Cell
 from .repository import CellRepo
 from .usecase import UpdateCellValue
+from ..sheet.repository import SheetRepo
 
 
 class CellPubsub(Pubsub):
-    def __init__(self, entity: Cell, repo: CellRepo):
+    def __init__(self, entity: Cell, cell_repo: CellRepo, sheet_repo: SheetRepo):
         self._usecases: list[UpdateCellValue] = []
         self._entity = entity
-        self._repo = repo
+        self._cell_repo = cell_repo
+        self._sheet_repo = sheet_repo
 
     def __repr__(self):
         return f"CellPubsub"
@@ -42,7 +44,7 @@ class CellPubsub(Pubsub):
         for i, row in enumerate(data):
             for j, cell_value in enumerate(row):
                 index = (start_row + i, start_col + j)
-                self._usecases.append(UpdateCellValue(sheet_id, index, data[i][j], self._repo).execute())
+                self._usecases.append(UpdateCellValue(sheet_id, index, data[i][j], self._cell_repo, self._sheet_repo).execute())
 
     def on_complete(self):
         logger.info("CellPubsub.on_complete() => updating subs: [...]")

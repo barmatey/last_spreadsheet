@@ -19,6 +19,8 @@ from spreadsheet.sheet.repository import SheetRepo
 from spreadsheet.wire.bootstrap import WireBootstrap, WirePubsub
 from spreadsheet.wire.entity import Ccol
 
+from src.spreadsheet.sheet import usecase as sheet_usecase
+
 from spreadsheet.formula.bootstrap import FormulaBootstrap
 from spreadsheet.wire.repository import WireRepo
 
@@ -56,9 +58,9 @@ class CreateGroupSheet(Command):
         # Create sheet
         size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
         sheet_id = uuid4()
-        cell_usecase.CreateTable(sheet_id, size, cell_repo).execute()
+        sheet_usecase.CreateSheet(sheet_id, "main", size, sheet_repo, cell_repo).execute()
         target_cell = cell_repo.get_filtred({"sheet_id": sheet_id, "index": (0, 0)})[0]
-        cell_pubsub = CellPubsub(target_cell, cell_repo)
+        cell_pubsub = CellPubsub(target_cell, cell_repo, sheet_repo)
 
         sorted_table_pubsub.subscribe(cell_pubsub)
 
