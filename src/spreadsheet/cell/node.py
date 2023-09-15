@@ -30,9 +30,6 @@ class CellPubsub(Pubsub):
         raise NotImplemented
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
-        logger.warning("CellNode.on_update()")
-        logger.info(f"new_data len: {len(new_data)* len(new_data[0])}")
-        logger.info(f"in_repo: {len(self._repo.get_all())}")
         self.on_subscribe(new_data)
 
     def on_subscribe(self, data: CellTable):
@@ -48,5 +45,5 @@ class CellPubsub(Pubsub):
                 self._usecases.append(UpdateCellValue(sheet_id, index, data[i][j], self._repo).execute())
 
     def on_complete(self):
-        logger.info("CellNode.on_complete() => updating subs: [...]")
+        logger.info("CellPubsub.on_complete() => updating subs: [...]")
         self.notify()

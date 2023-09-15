@@ -11,7 +11,7 @@ class UpdateCellValue:
     def __init__(self, sheet_id: UUID, index: tuple[int, int], value: CellValue, repo: CellRepo):
         self._repo = repo
         self._new_value = value
-        self._old_cell = self._repo.get_by_index(sheet_id, index)
+        self._old_cell = self._repo.get_by_index_or_create(sheet_id, index)
         self._new_cell = copy(self._old_cell)
 
     def execute(self):

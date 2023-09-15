@@ -24,6 +24,10 @@ class CellRepo(ABC):
         raise NotImplemented
 
     @abstractmethod
+    def get_by_index_or_create(self, sheet_id: UUID, index: tuple[int, int]) -> Cell:
+        raise NotImplemented
+
+    @abstractmethod
     def get_filtred(self, filter_by: dict, order_by: list[str] = None, asc=True) -> list[Cell]:
         raise NotImplemented
 
@@ -53,6 +57,14 @@ class CellRepoFake(CellRepo):
             if cell.sheet_id == sheet_id and cell.index == index:
                 return cell
         raise LookupError(f"index={index}")
+
+    def get_by_index_or_create(self, sheet_id: UUID, index: tuple[int, int]) -> Cell:
+        try:
+            return self.get_by_index(sheet_id, index)
+        except LookupError:
+            cell = Cell(index=index, value=None, sheet_id=sheet_id)
+            self.add(cell)
+            return cell
 
     def get_filtred(self, filter_by: dict, order_by: list[str] = None, asc=True) -> list[Cell]:
         result = []
