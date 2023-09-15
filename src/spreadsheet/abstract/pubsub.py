@@ -28,7 +28,7 @@ class Publisher(ABC):
         raise NotImplemented
 
     @abstractmethod
-    def subscribe(self, sub: Union['Pubsub', list['Pubsub']]):
+    def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
         raise NotImplemented
 
 

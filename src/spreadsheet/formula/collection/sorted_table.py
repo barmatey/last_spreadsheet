@@ -41,8 +41,15 @@ class SortedTablePubsub(Pubsub):
     def notify(self):
         raise NotImplemented
 
-    def subscribe(self, sub: Union['Pubsub', list['Pubsub']]):
-        raise NotImplemented
+    def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
+        if not isinstance(subs, list):
+            subs = [subs]
+        for sub in subs:
+            sub.on_subscribe(self._new_entity.sorted_data)
+            self._new_entity.subs.append(sub)
+        for sub in subs:
+            sub.on_complete()
+        self._repo.update(self._new_entity)
 
     def on_subscribe(self, data: CellTable):
         self._new_entity.unsorted_data = data

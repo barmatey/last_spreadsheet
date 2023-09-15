@@ -27,8 +27,8 @@ def print_hi():
     # for row in formula_repo.get_all()[1].sorted_data:
     #     logger.info(row)
 
-    for cell in cell_repo.get_all():
-        logger.info(cell.value)
+    # for cell in cell_repo.get_all():
+    #     logger.info(cell.value)
 
 
 if __name__ == '__main__':

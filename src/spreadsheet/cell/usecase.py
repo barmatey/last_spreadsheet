@@ -1,35 +1,43 @@
+from copy import copy
 from uuid import UUID, uuid4
+
+from src.spreadsheet.abstract.cell_value import CellValue
 
 from .entity import Cell
 from .repository import CellRepo
-from ..abstract.cell_value import CellTable
+
+
+class UpdateCellValue:
+    def __init__(self, sheet_id: UUID, index: tuple[int, int], value: CellValue, repo: CellRepo):
+        self._repo = repo
+        self._new_value = value
+        self._old_cell = self._repo.get_by_index(sheet_id, index)
+        self._new_cell = copy(self._old_cell)
+
+    def execute(self):
+        self._new_cell.value = self._new_value
+        self._repo.update(self._new_cell)
+        return self
+
+    def notify(self):
+        for sub in self._new_cell.subs:
+            sub.on_update([[self._old_cell.value]], [[self._new_cell.value]])
+        for sub in self._new_cell.subs:
+            sub.on_complete()
 
 
 class CreateTable:
-    def __init__(self, repo: CellRepo):
+    def __init__(self, sheet_id: UUID, size: tuple[int, int], repo: CellRepo):
         self._repo = repo
-        self._size = (0, 0)
-        self._values = None
-        self._sheet_id = uuid4()
-
-    def set_size(self, size: tuple[int, int]):
         self._size = size
-        return self
+        self._sheet_id = sheet_id
 
-    def set_values(self, values: CellTable):
-        self._values = values
-        return self
-
-    def set_sheet_id(self, uuid: UUID):
-        self._sheet_id = uuid
-        return self
-
-    def create(self):
+    def execute(self):
         table = []
         for i in range(0, self._size[0]):
             row = []
             for j in range(0, self._size[1]):
-                cell = Cell(index=(i, j), value=self._values[i][j], sheet_id=self._sheet_id)
+                cell = Cell(index=(i, j), value=None, sheet_id=self._sheet_id)
                 row.append(cell)
                 self._repo.add(cell)
             table.append(row)

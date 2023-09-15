@@ -1,10 +1,14 @@
+from copy import deepcopy
 from uuid import UUID, uuid4
 
+import pandas as pd
 from loguru import logger
 from pydantic import Field
 
 from spreadsheet.abstract.command import Command
 from spreadsheet.cell.bootstrap import CellBootstrap
+from spreadsheet.cell.entity import Cell
+from spreadsheet.cell.node import CellPubsub
 from spreadsheet.cell.repository import CellRepo
 from spreadsheet.cell import usecase as cell_usecase
 from spreadsheet.formula.collection.plan_items import PlanItems, PlanItemsPubsub
@@ -19,12 +23,20 @@ from spreadsheet.formula.bootstrap import FormulaBootstrap
 from spreadsheet.wire.repository import WireRepo
 
 
+def print_table(cells: list[Cell], size: tuple[int, int]):
+    cells = deepcopy(cells)
+    for cell in cells:
+        print(f"{cell.index}: \t {cell.value}")
+
+
 class CreateGroupSheet(Command):
     source_id: UUID
     ccols: list[Ccol]
     uuid: UUID = Field(default_factory=uuid4)
 
     def execute(self):
+        logger.debug("CreateGroupSheet.execute()")
+
         # Repositories
         formula_repo: FormulaRepo = FormulaBootstrap().get_repo()
         wire_repo: WireRepo = WireBootstrap().get_repo()
@@ -48,12 +60,12 @@ class CreateGroupSheet(Command):
         plan_items_pubsub.subscribe(sorted_table_pubsub)
 
         # Create sheet
-        size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
-        cells = cell_usecase.CreateTable(cell_repo).set_size(size).set_values(plan_items_pubsub.get_entity().utable).create()
-        logger.success(f'\n{table}')
+        size = (len(plan_items_pubsub.get_entity().utable), 1 + 2*len(plan_items_pubsub.get_entity().utable[0]))
+        sheet_id = uuid4()
+        cell_usecase.CreateTable(sheet_id, size, cell_repo).execute()
+        target_cell = cell_repo.get_filtred({"sheet_id": sheet_id, "index": (0, 0)})[0]
+        cell_pubsub = CellPubsub(target_cell, cell_repo)
 
-        # (CreateSheet(sheet_repo)
-        #  .set_title("main")
-        #  .set_size(size)
-        #  .create()
-        #  )
+        sorted_table_pubsub.subscribe(cell_pubsub)
+
+        cells = cell_repo.get_filtred({"sheet_id": sheet_id})
