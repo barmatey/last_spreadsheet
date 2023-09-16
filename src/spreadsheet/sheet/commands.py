@@ -63,3 +63,19 @@ class CreateGroupSheet(Command):
 
         sorted_table_pubsub.subscribe(cell_pubsub)
 
+
+class CreateReportSheet(Command):
+    source_id: UUID
+    group_sheet_id: UUID
+    uuid: UUID = Field(default_factory=uuid4)
+
+    def execute(self):
+        # Repositories
+        formula_repo: FormulaRepo = FormulaBootstrap().get_repo()
+        wire_repo: WireRepo = WireBootstrap().get_repo()
+        cell_repo: CellRepo = CellBootstrap().get_repo()
+        sheet_repo: SheetRepo = SheetBootstrap().get_repo()
+
+        group_sheet = sheet_repo.get_by_id(self.group_sheet_id)
+        report_sheet_size = (group_sheet.size[0], group_sheet.size[1] + 1)
+        blank_report_sheet = sheet_usecase.CreateSheet(uuid4(), "main", report_sheet_size, sheet_repo, cell_repo).execute()
