@@ -1,4 +1,3 @@
-from copy import copy
 from typing import Union
 from uuid import UUID, uuid4
 
@@ -22,11 +21,20 @@ class PlanItems(Formula):
     def __repr__(self):
         return f"PlanItems"
 
+    def partial_copy(self) -> 'PlanItems':
+        return self.__class__(
+            uuid=self.uuid,
+            subs=self.subs,
+            utable=self.utable.copy(),
+            uniques=self.uniques.copy(),
+            ccols=self.ccols.copy(),
+        )
+
 
 class PlanItemsPubsub(Pubsub):
     def __init__(self, entity: PlanItems, repo: FormulaRepo):
         self._old_entity = entity
-        self._new_entity = copy(entity)
+        self._new_entity = entity.partial_copy()
         self._repo = repo
 
     def get_entity(self):
@@ -64,17 +72,16 @@ class PlanItemsPubsub(Pubsub):
         new_row = [new_data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         new_key = str(new_row)
 
-        utable = self._new_entity.utable
-        # Drop old value
-        self._new_entity.uniques[old_key] -= 1
+        self._old_entity = self._new_entity.partial_copy()
 
+        # Drop old value
+        utable = self._new_entity.utable
+        self._new_entity.uniques[old_key] -= 1
         if self._new_entity.uniques[old_key] == 0:
             del self._new_entity.uniques[old_key]
             for i, row in enumerate(utable):
                 if str(row) == old_key:
-                    utable[i] = new_row
-                    return
-            raise LookupError
+                    del utable[i]
 
         if self._new_entity.uniques.get(new_key) is not None:
             self._new_entity.uniques[new_key] += 1

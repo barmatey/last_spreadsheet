@@ -1,4 +1,3 @@
-from copy import deepcopy
 from uuid import UUID, uuid4
 
 import pandas as pd
@@ -50,10 +49,10 @@ class CreateGroupSheet(Command):
             repo=wire_repo).subscribe(plan_items_pubsub)
 
         # Create SortedTable and subscribe SortedTable on PlanItems
-        sorted_table = SortedTable()
-        formula_repo.add(sorted_table)
-        sorted_table_pubsub = SortedTablePubsub(sorted_table, formula_repo)
-        plan_items_pubsub.subscribe(sorted_table_pubsub)
+        # sorted_table = SortedTable()
+        # formula_repo.add(sorted_table)
+        # sorted_table_pubsub = SortedTablePubsub(sorted_table, formula_repo)
+        # plan_items_pubsub.subscribe(sorted_table_pubsub)
 
         # Create sheet
         size = (len(plan_items_pubsub.get_entity().utable), len(plan_items_pubsub.get_entity().utable[0]))
@@ -62,5 +61,5 @@ class CreateGroupSheet(Command):
         target_cell = cell_repo.get_filtred({"sheet_id": sheet_id, "index": (0, 0)})[0]
         cell_pubsub = CellPubsub(target_cell, cell_repo, sheet_repo)
 
-        sorted_table_pubsub.subscribe(cell_pubsub)
+        plan_items_pubsub.subscribe(cell_pubsub)
 

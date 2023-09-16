@@ -1,4 +1,3 @@
-from copy import copy, deepcopy
 from typing import Union
 from uuid import UUID, uuid4
 
@@ -24,13 +23,7 @@ class SortedTablePubsub(Pubsub):
     def __init__(self, entity: SortedTable, repo: FormulaRepo):
         self._repo = repo
         self._old_entity = entity
-        self._new_entity = SortedTable(
-            uuid=entity.uuid,
-            unsorted_data=deepcopy(entity.unsorted_data),
-            sorted_data=deepcopy(entity.sorted_data),
-            asc=entity.asc,
-            subs=entity.subs,
-        )
+        self._new_entity = entity.model_copy()
 
     def __repr__(self):
         return "SortedTablePubsub"
@@ -52,7 +45,6 @@ class SortedTablePubsub(Pubsub):
             self._new_entity.subs.append(sub)
         for sub in subs:
             sub.on_complete()
-        self._repo.update(self._new_entity)
 
     def on_subscribe(self, data: CellTable):
         self._new_entity.unsorted_data = data

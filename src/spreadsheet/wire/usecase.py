@@ -1,7 +1,4 @@
-from copy import copy
 from uuid import UUID
-
-from loguru import logger
 
 from spreadsheet.abstract.pubsub import Pubsub
 from .entity import Wire
@@ -34,7 +31,7 @@ class UpdateWire:
 
     def load_entity_by_id(self, uuid: UUID) -> 'UpdateWire':
         self._old_wire = self._repo.get_by_id(uuid)
-        self._new_wire = copy(self._old_wire)
+        self._new_wire = self._old_wire.model_copy()
         return self
 
     def update(self, data: dict) -> 'UpdateWire':

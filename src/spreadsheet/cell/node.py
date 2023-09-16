@@ -32,7 +32,23 @@ class CellPubsub(Pubsub):
         raise NotImplemented
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
-        self.on_subscribe(new_data)
+        logger.success(f'old_data: {old_data}')
+        logger.success(f'new_data: {new_data}')
+        sheet_id = self._entity.sheet_id
+        start_row = self._entity.index[0]
+        start_col = self._entity.index[1]
+
+        hashed = {}
+        for i, row in enumerate(old_data):
+            for j, col in enumerate(old_data):
+                index = (start_row + i, start_col + j)
+                hashed[index] = UpdateCellValue(sheet_id, index, None, self._cell_repo, self._sheet_repo)
+        for i, row in enumerate(new_data):
+            for j, col in enumerate(new_data):
+                index = (i, j)
+                hashed[index] = UpdateCellValue(sheet_id, index, new_data[i][j], self._cell_repo, self._sheet_repo)
+
+        self._usecases = [u.execute() for u in hashed.values()]
 
     def on_subscribe(self, data: CellTable):
         if len(data) == 1 and len(data[0]) == 1:
@@ -41,6 +57,7 @@ class CellPubsub(Pubsub):
         sheet_id = self._entity.sheet_id
         start_row = self._entity.index[0]
         start_col = self._entity.index[1]
+
         for i, row in enumerate(data):
             for j, cell_value in enumerate(row):
                 index = (start_row + i, start_col + j)

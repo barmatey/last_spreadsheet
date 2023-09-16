@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
+
+from loguru import logger
+
 from .entity import Formula
 
 
