@@ -42,21 +42,23 @@ class PlanItemsPubsub(Pubsub):
 
     def notify(self):
         for sub in self._new_entity.subs:
+            sub.on_before_start()
             sub.on_update(self._old_entity.utable, self._new_entity.utable)
-        for sub in self._new_entity.subs:
             sub.on_complete()
 
     def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
         if not isinstance(subs, list):
             subs = [subs]
         for sub in subs:
-            sub.on_subscribe(self._new_entity.utable)
             self._new_entity.subs.append(sub)
-        for sub in subs:
+            sub.on_before_start()
+            sub.on_subscribe(self._new_entity.utable)
             sub.on_complete()
         self._repo.update(self._new_entity)
 
-    # todo Should I log old_entity it this code?
+    def on_before_start(self):
+        self._old_entity = self._new_entity.partial_copy()
+
     def on_subscribe(self, data: Wire):
         row = [data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         key = str(row)
@@ -72,8 +74,6 @@ class PlanItemsPubsub(Pubsub):
 
         new_row = [new_data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         new_key = str(new_row)
-
-        self._old_entity = self._new_entity.partial_copy()
 
         # Drop old value
         utable = self._new_entity.utable

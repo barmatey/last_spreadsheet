@@ -14,3 +14,12 @@ class Cell(BaseModel):
     uuid: UUID = Field(default_factory=uuid4)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def partial_copy(self):
+        return self.__class__(
+            index=self.index,
+            value=self.value,
+            sheet_id=self.sheet_id,
+            subs=self.subs.copy(),
+            uuid=self.uuid,
+        )

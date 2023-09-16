@@ -53,6 +53,9 @@ class WirePubsub(Pubsub):
         self._repo = repo
         self._wires = wires if isinstance(wires, list) else [wires]
 
+    def on_before_start(self):
+        pass
+
     def get_entity(self):
         raise NotImplemented
 
@@ -66,11 +69,11 @@ class WirePubsub(Pubsub):
             subs = [subs]
         for wire in self._wires:
             for sub in subs:
-                sub.on_subscribe(wire)
                 wire.subs.append(sub)
                 self._repo.update(wire)
-        for sub in subs:
-            sub.on_complete()
+                sub.on_before_start()
+                sub.on_subscribe(wire)
+                sub.on_complete()
 
     def on_subscribe(self, data):
         raise NotImplemented

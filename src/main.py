@@ -23,7 +23,7 @@ def print_table():
     cells = cell_repo.get_filtred({"sheet_id": sheet.uuid})
     size = sheet.size
 
-    cells = [c.model_copy(deep=True) for c in cells]
+    # cells = [c.model_copy(deep=True) for c in cells]
     table = []
     for i in range(0, size[0]):
         row = []
@@ -33,6 +33,9 @@ def print_table():
         table.append(row)
     df = pd.DataFrame(table)
     print(df.to_string())
+
+    print()
+    print()
 
     sheet = sheet_repo.get_all()[1]
     cells = cell_repo.get_filtred({"sheet_id": sheet.uuid})
@@ -59,11 +62,11 @@ def print_hi():
     cmd = CreateReportSheet(source_id=uuid4(), group_sheet_id=group_id)
     cmd.execute()
 
-    # wire_repo: WireRepo = WireBootstrap().get_repo()
-    # old_wire = wire_repo.get_all()[0]
-    #
-    # cmd = UpdateWire(wire_id=old_wire.uuid, sender=66.1, sub1="сарматтекущий")
-    # cmd.execute()
+    wire_repo: WireRepo = WireBootstrap().get_repo()
+    old_wire = wire_repo.get_all()[0]
+
+    cmd = UpdateWire(wire_id=old_wire.uuid, sender=66.1, sub1="сарматтекущий")
+    cmd.execute()
 
     print_table()
 

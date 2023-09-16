@@ -6,11 +6,15 @@ from spreadsheet.abstract.cell_value import CellTable
 
 class Subscriber(ABC):
     @abstractmethod
-    def on_update(self, old_data: CellTable, new_data: CellTable):
+    def on_before_start(self):
         raise NotImplemented
 
     @abstractmethod
     def on_subscribe(self, data: CellTable):
+        raise NotImplemented
+
+    @abstractmethod
+    def on_update(self, old_data: CellTable, new_data: CellTable):
         raise NotImplemented
 
     @abstractmethod

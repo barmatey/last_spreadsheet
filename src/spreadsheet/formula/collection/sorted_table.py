@@ -51,16 +51,19 @@ class SortedTablePubsub(Pubsub):
         if not isinstance(subs, list):
             subs = [subs]
         for sub in subs:
+            sub.on_before_start()
             sub.on_subscribe(self._new_entity.sorted_data)
-            self._new_entity.subs.append(sub)
-        for sub in subs:
             sub.on_complete()
+            self._new_entity.subs.append(sub)
+        self._repo.update(self._new_entity)
+
+    def on_before_start(self):
+        self._old_entity = self._new_entity.partial_copy()
 
     def on_subscribe(self, data: CellTable):
         self._new_entity.unsorted_data = data
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
-        self._old_entity = self._new_entity.partial_copy()
         self._new_entity.unsorted_data = new_data
 
     def on_complete(self):
