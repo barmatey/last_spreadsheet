@@ -39,12 +39,11 @@ class CellPubsub(Pubsub):
         for i, row in enumerate(old_data):
             for j in range(0, len(row)):
                 index = (start_row + i, start_col + j)
-                hashed[index] = UpdateCellValue(sheet_id, (i, j), None)
+                hashed[index] = UpdateCellValue(sheet_id, index, None)
         for i, row in enumerate(new_data):
             for j in range(0, len(row)):
-                index = (i, j)
-                hashed[index] = UpdateCellValue(sheet_id, (i, j), new_data[i][j])
-
+                index = (start_row + i, start_col + j)
+                hashed[index] = UpdateCellValue(sheet_id, index, new_data[i][j])
         self._usecases = hashed.values()
 
     def on_subscribe(self, data: CellTable):
