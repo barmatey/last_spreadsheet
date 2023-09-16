@@ -24,7 +24,7 @@ class UpdateWire(Command):
     uuid: UUID = Field(default_factory=uuid4)
 
     def execute(self):
-        logger.debug("UpdateWire.execute()")
+        logger.info("UpdateWire.execute()")
         wire_repo: WireRepo = WireBootstrap().get_repo()
         data = self.model_dump(exclude_none=True, exclude={"uuid", "wire_id"})
         UpdateWireUsecase(wire_repo).load_entity_by_id(self.wire_id).update(data).notify_subscribers()

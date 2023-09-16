@@ -1,3 +1,9 @@
+import time
+from functools import wraps
+
+from loguru import logger
+
+
 def singleton(class_):
     instances = {}
 
@@ -7,3 +13,16 @@ def singleton(class_):
         return instances[class_]
 
     return getinstance
+
+
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        logger.success(f'function {func.__name__} took {total_time * 1000:.0f}ms')
+        return result
+
+    return timeit_wrapper

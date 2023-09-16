@@ -4,6 +4,7 @@ import pandas as pd
 from loguru import logger
 from pydantic import Field
 
+import helpers.decorators
 from spreadsheet.abstract.command import Command
 from spreadsheet.cell.bootstrap import CellBootstrap
 from spreadsheet.cell.entity import Cell
@@ -29,8 +30,9 @@ class CreateGroupSheet(Command):
     ccols: list[Ccol]
     uuid: UUID = Field(default_factory=uuid4)
 
+    @helpers.decorators.timeit
     def execute(self):
-        logger.debug("CreateGroupSheet.execute()")
+        logger.info("CreateGroupSheet.execute()")
 
         # Repositories
         formula_repo: FormulaRepo = FormulaBootstrap().get_repo()
@@ -69,8 +71,9 @@ class CreateReportSheet(Command):
     group_sheet_id: UUID
     uuid: UUID = Field(default_factory=uuid4)
 
+    @helpers.decorators.timeit
     def execute(self):
-        logger.debug(f"CreateReportSheet.execute()")
+        logger.info(f"CreateReportSheet.execute()")
         # Repositories
         cell_repo: CellRepo = CellBootstrap().get_repo()
         sheet_repo: SheetRepo = SheetBootstrap().get_repo()

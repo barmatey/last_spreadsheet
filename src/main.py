@@ -1,7 +1,12 @@
+import sys
 from uuid import uuid4
 
 import pandas as pd
 from loguru import logger
+#
+logger.remove(0)
+logger.add(sys.stderr, level="INFO")
+
 
 from spreadsheet.cell.bootstrap import CellBootstrap
 from spreadsheet.cell.entity import Cell

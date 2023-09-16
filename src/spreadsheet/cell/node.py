@@ -60,7 +60,7 @@ class CellPubsub(Pubsub):
 
     def on_complete(self):
         for u in self._usecases:
-            logger.info(f"CellPubsub("
+            logger.debug(f"CellPubsub("
                         f"sheet_id={u._new_cell.sheet_id}, "
                         f"index={u._new_cell.index}, "
                         f"value={u._new_cell.value}"
