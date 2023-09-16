@@ -18,6 +18,15 @@ class SortedTable(Formula):
     subs: list[Pubsub] = Field(default_factory=list)
     uuid: UUID = Field(default_factory=uuid4)
 
+    def partial_copy(self):
+        return self.__class__(
+            uuid=self.uuid,
+            unsorted_data=self.unsorted_data.copy(),
+            sorted_data=self.sorted_data.copy(),
+            asc=self.asc,
+            subs=self.subs,
+        )
+
 
 class SortedTablePubsub(Pubsub):
     def __init__(self, entity: SortedTable, repo: FormulaRepo):
@@ -37,6 +46,7 @@ class SortedTablePubsub(Pubsub):
         for sub in self._new_entity.subs:
             sub.on_complete()
 
+    # todo Should I log data in this code?
     def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
         if not isinstance(subs, list):
             subs = [subs]
@@ -50,6 +60,7 @@ class SortedTablePubsub(Pubsub):
         self._new_entity.unsorted_data = data
 
     def on_update(self, old_data: CellTable, new_data: CellTable):
+        self._old_entity = self._new_entity.partial_copy()
         self._new_entity.unsorted_data = new_data
 
     def on_complete(self):
