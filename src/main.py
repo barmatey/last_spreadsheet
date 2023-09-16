@@ -1,6 +1,7 @@
 from copy import deepcopy
 from uuid import uuid4
 
+import pandas as pd
 from loguru import logger
 
 from spreadsheet.cell.bootstrap import CellBootstrap
@@ -14,9 +15,16 @@ from spreadsheet.wire.repository import WireRepo
 
 
 def print_table(cells: list[Cell], size: tuple[int, int]):
-    cells = deepcopy(cells)[0:6]
-    for cell in cells:
-        print(f"{cell.index}: \t {cell.value}")
+    cells = deepcopy(cells)
+    table = []
+    for i in range(0, size[0]):
+        row = []
+        for j in range(0, size[1]):
+            index = i * size[1] + j
+            row.append(cells[index].value)
+        table.append(row)
+    df = pd.DataFrame(table)
+    print(df.to_string())
 
 
 def print_hi():
@@ -33,13 +41,7 @@ def print_hi():
     cmd.execute()
 
     cells = cell_repo.get_all()
-    print_table(cells, (32, 5))
-
-    # for row in formula_repo.get_all()[1].sorted_data:
-    #     logger.info(row)
-
-    # for cell in cell_repo.get_all():
-    #     logger.info(cell.value)
+    print_table(cells, (32, 2))
 
 
 if __name__ == '__main__':

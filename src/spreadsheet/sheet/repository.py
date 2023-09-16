@@ -17,6 +17,10 @@ class SheetRepo(ABC):
     def get_by_id(self, uuid: UUID) -> Sheet:
         raise NotImplemented
 
+    @abstractmethod
+    def update(self, sheet: Sheet):
+        raise NotImplemented
+
 
 class SheetRepoFake(SheetRepo):
     def __init__(self):
@@ -32,4 +36,11 @@ class SheetRepoFake(SheetRepo):
         for sheet in self._data:
             if sheet.uuid == uuid:
                 return sheet
+        raise LookupError
+
+    def update(self, data: Sheet):
+        for i, sheet in enumerate(self._data):
+            if sheet.uuid == data.uuid:
+                self._data[i] = data
+                return 
         raise LookupError

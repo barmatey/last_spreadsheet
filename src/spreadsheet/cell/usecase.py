@@ -17,7 +17,7 @@ class UpdateCellValue:
         self._old_cell = self._get_cell_or_expand_sheet(sheet_id, index)
         self._new_cell = copy(self._old_cell)
 
-    def _get_cell_or_expand_sheet(self, sheet_id: UUID, index: tuple[int, int]):
+    def _get_cell_or_expand_sheet(self, sheet_id: UUID, index: tuple[int, int]) -> Cell:
         try:
             cell = self._cell_repo.get_by_index(sheet_id, index)
             return cell
@@ -28,12 +28,16 @@ class UpdateCellValue:
                     for j in range(0, sheet.size[1] + 1):
                         cell = Cell(index=(i, j), value=None, sheet_id=sheet_id)
                         self._cell_repo.add(cell)
+                sheet.size = (index[0], sheet.size[1])
+                self._sheet_repo.update(sheet)
                 return self._cell_repo.get_by_index(sheet_id, index)
             if sheet.size[1] <= index[1]:
                 for i in range(0, sheet.size[0] + 1):
                     for j in range(sheet.size[1], index[1] + 1):
                         cell = Cell(index=(i, j), value=None, sheet_id=sheet_id)
                         self._cell_repo.add(cell)
+                sheet.size = (sheet.size[0], index[1])
+                self._sheet_repo.update(sheet)
                 return self._cell_repo.get_by_index(sheet_id, index)
             raise Exception
 
