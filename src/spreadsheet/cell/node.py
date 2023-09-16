@@ -40,11 +40,11 @@ class CellPubsub(Pubsub):
 
         hashed = {}
         for i, row in enumerate(old_data):
-            for j, col in enumerate(old_data):
+            for j in range(0, len(row)):
                 index = (start_row + i, start_col + j)
                 hashed[index] = UpdateCellValue(sheet_id, index, None, self._cell_repo, self._sheet_repo)
         for i, row in enumerate(new_data):
-            for j, col in enumerate(new_data):
+            for j in range(0, len(row)):
                 index = (i, j)
                 hashed[index] = UpdateCellValue(sheet_id, index, new_data[i][j], self._cell_repo, self._sheet_repo)
 

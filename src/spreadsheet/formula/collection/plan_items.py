@@ -56,6 +56,7 @@ class PlanItemsPubsub(Pubsub):
             sub.on_complete()
         self._repo.update(self._new_entity)
 
+    # todo Should I log old_entity it this code?
     def on_subscribe(self, data: Wire):
         row = [data.__getattribute__(ccol) for ccol in self._new_entity.ccols]
         key = str(row)
