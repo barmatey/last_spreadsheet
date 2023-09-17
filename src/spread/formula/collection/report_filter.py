@@ -39,7 +39,7 @@ class ReportFilterNode(Pubsub):
         self._model.filter_by = filter_by
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
-        pass
+        logger.warning("ReportFilterNode.on_update() not impleented")
 
     def on_complete(self):
         logger.debug(f"ReportFilterNode.on_complete() => notify {len(self._model.subs)} subs")
