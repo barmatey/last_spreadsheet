@@ -36,6 +36,7 @@ class ReportFilterNode(Pubsub):
         filter_by = {}
         for j, ccol in enumerate(data.ccols):
             filter_by[ccol] = data.utable[index][j]
+        self._model.filter_by = filter_by
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         pass

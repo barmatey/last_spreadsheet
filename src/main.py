@@ -94,12 +94,13 @@ def print_hi():
     cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
     cmd.execute()
 
-    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
 
     # Update and print
     cmd = UpdateWire(uuid=wire_id, sender=5452)
-    cmd.execute()
+    # cmd.execute()
     logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
+    for sub in formula_repo.get_by_id(plan_items_id).subs:
+        logger.success(f"filter_by: {sub._model.filter_by}")
 
 
 def bar(*arg):
