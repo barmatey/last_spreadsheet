@@ -7,7 +7,7 @@ from loguru import logger
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
 from spread.formula.repository import FormulaRepo
-from spread.sheet.commands import CreateGroupSheet
+from spread.sheet.commands import CreatePlanItems
 from spread.source.commands import CreateSource
 from spread.source.repository import SourceRepo
 from spread.wire.commands import CreateWire, UpdateWire
@@ -72,14 +72,16 @@ def print_hi():
     source_repo: SourceRepo = SourceRepo()
     formula_repo: FormulaRepo = FormulaRepo()
 
-    cmd = UpdateWire(uuid=wire_id, sender=123)
+    cmd = UpdateWire(uuid=wire_id, sender=-777)
     cmd.execute()
 
-    cmd = CreateGroupSheet(source_id=source_id, ccols=['sender', 'sub1'])
+    logger.success(wire_repo.get_by_id(wire_id))
+
+    cmd = CreatePlanItems(source_id=source_id, ccols=['sender', 'sub1'])
     cmd.execute()
 
     plan = formula_repo.get_by_id(cmd.result())
-    print(plan.uniques)
+    logger.success(plan.uniques)
 
 
 if __name__ == '__main__':

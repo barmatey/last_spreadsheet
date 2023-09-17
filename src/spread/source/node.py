@@ -26,8 +26,12 @@ class SourceNode(Pubsub):
         if isinstance(old_data, Wire) and isinstance(new_data, Wire):
             self._old_wire = old_data
             self._new_wire = new_data
-            return
-        raise Exception
+            for i, wire in enumerate(self._source.wires):
+                if wire.uuid == new_data.uuid:
+                    self._source.wires[i] = new_data
+                    return
+            raise LookupError
+        raise TypeError
 
     def on_complete(self):
         logger.debug(f"SourceNode.on_complete() => notify {len(self._source.subs)} subs")

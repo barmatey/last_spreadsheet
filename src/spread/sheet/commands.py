@@ -11,14 +11,14 @@ from spread.source.repository import SourceRepo
 from spread.wire.model import Ccol
 
 
-class CreateGroupSheet(Command):
+class CreatePlanItems(Command):
     source_id: UUID
     ccols: list[Ccol]
     uuid: UUID = Field(default_factory=uuid4)
     _result: UUID | None = None
 
     def execute(self):
-        logger.info("CreateGroupSheet")
+        logger.info("CreatePlanItems.execute()")
         source_repo: SourceRepo = SourceRepo()
         source = source_repo.get_by_id(self.source_id)
         source_node = SourceNode(source)
