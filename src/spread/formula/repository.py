@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from loguru import logger
+
 from helpers.decorators import singleton
 from spread.formula.model import Formula
 
@@ -21,3 +23,6 @@ class FormulaRepo:
 
     def get_by_id(self, uuid: UUID) -> Formula:
         return self._data[uuid]
+
+    def get_all(self) -> list[Formula]:
+        return list(self._data.values())

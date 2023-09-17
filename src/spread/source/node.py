@@ -2,6 +2,7 @@ from loguru import logger
 
 from spread.abstract.pubsub import Pubsub, Subscriber
 from spread.abstract.pydantic_model import PydanticModel
+from spread.formula.repository import FormulaRepo
 from spread.source.model import Source
 from spread.wire.model import Wire
 from spread.source.repository import SourceRepo
@@ -14,6 +15,9 @@ class SourceNode(Pubsub):
 
         self._old_wire = None
         self._new_wire = None
+
+    def __repr__(self):
+        return f"SourceNode"
 
     def on_before_start(self):
         pass

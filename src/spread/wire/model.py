@@ -27,4 +27,15 @@ class Wire(PydanticModel):
         return [self.__getattribute__(x) for x in ccols]
 
     def partial_copy(self):
-        return self.model_copy()
+        return self.__class__(
+            currency=self.currency,
+            date=self.date,
+            sender=self.sender,
+            receiver=self.receiver,
+            amount=self.amount,
+            sub1=self.sub1,
+            sub2=self.sub2,
+            comment=self.comment,
+            subs=self.subs.copy(),
+            uuid=self.uuid,
+        )

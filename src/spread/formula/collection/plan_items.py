@@ -25,6 +25,7 @@ class PlanItems(Formula):
         return self.__class__(
             subs=self.subs.copy(),
             uniques=self.uniques.copy(),
+            utable=self.utable.copy(),
             ccols=self.ccols.copy(),
             uuid=self.uuid,
         )
@@ -32,8 +33,8 @@ class PlanItems(Formula):
 
 class PlanItemsNode(Pubsub):
     def __init__(self, model: PlanItems):
-        self._model = model.partial_copy()
-        self._old_model = model
+        self._model = model
+        self._old_model = None
 
         self._formula_repo: FormulaRepo = FormulaRepo()
 
@@ -82,7 +83,7 @@ class PlanItemsNode(Pubsub):
         utable.append(new_row)
 
     def on_complete(self):
-        logger.debug(f"PlanItemsPubsub.on_complete() => update {len(self._model.subs)} subs")
+        logger.debug(f"PlanItemsPubsub.on_complete() => notify {len(self._model.subs)} subs")
         self._formula_repo.update(self._model)
         self.notify()
 
@@ -93,9 +94,10 @@ class PlanItemsNode(Pubsub):
             sub.on_complete()
 
     def subscribe(self, subs: list[Subscriber]):
+        logger.debug(f"PlanItemsNode.subscribe({subs})")
         for sub in subs:
             sub.on_before_start()
-            sub.on_update(self._old_model, self._model)
+            sub.on_subscribe(self._model)
             sub.on_complete()
             self._model.subs.append(sub)
         self._formula_repo.update(self._model)

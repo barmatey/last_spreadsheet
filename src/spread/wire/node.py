@@ -2,6 +2,7 @@ from loguru import logger
 
 from spread.abstract.pubsub import Pubsub, Subscriber
 from spread.abstract.pydantic_model import PydanticModel
+from spread.formula.repository import FormulaRepo
 from spread.wire.model import Wire
 from spread.wire.repository import WireRepo
 
@@ -16,7 +17,7 @@ class WireNode(Pubsub):
         self._old_model = self._model.partial_copy()
 
     def on_subscribe(self, data: PydanticModel):
-        pass
+        raise NotImplemented
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(new_data, Wire):
@@ -35,6 +36,7 @@ class WireNode(Pubsub):
             sub.on_complete()
 
     def subscribe(self, subs: list[Subscriber]):
+        logger.debug(f"WireNode.subscribe({subs})")
         for sub in subs:
             sub.on_before_start()
             sub.on_subscribe(self._model)

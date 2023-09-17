@@ -1,5 +1,7 @@
+import random
 import sys
-from uuid import uuid4
+from copy import deepcopy
+from uuid import uuid4, UUID
 
 import pandas as pd
 from loguru import logger
@@ -7,7 +9,7 @@ from loguru import logger
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
 from spread.formula.repository import FormulaRepo
-from spread.sheet.commands import CreatePlanItems
+from spread.sheet.commands import CreatePlanItems, CreateReportFilters
 from spread.source.commands import CreateSource
 from spread.source.repository import SourceRepo
 from spread.wire.commands import CreateWire, UpdateWire
@@ -59,29 +61,49 @@ def print_table():
     print(df.to_string())
 
 
+def create_wires(source_id: UUID) -> list[UUID]:
+    commands = []
+    for i in range(0, 4):
+        commands.append(
+            CreateWire(sender=i, receiver=i + 3, sub1=str(random.random()), amount=random.random(), source_id=source_id)
+        )
+    results = []
+    for cmd in commands:
+        cmd.execute()
+        results.append(cmd.result())
+
+    return results
+
+
 def print_hi():
     cmd = CreateSource()
     cmd.execute()
     source_id = cmd.result()
 
-    cmd = CreateWire(sender=1, sub1='OS', receiver=2, amount=111, source_id=source_id)
-    cmd.execute()
-    wire_id = cmd.result()
+    wires_ids = create_wires(source_id)
+    wire_id = wires_ids[0]
 
     wire_repo: WireRepo = WireRepo()
     source_repo: SourceRepo = SourceRepo()
     formula_repo: FormulaRepo = FormulaRepo()
 
-    cmd = UpdateWire(uuid=wire_id, sender=-777)
-    cmd.execute()
-
-    logger.success(wire_repo.get_by_id(wire_id))
-
     cmd = CreatePlanItems(source_id=source_id, ccols=['sender', 'sub1'])
     cmd.execute()
+    plan_items_id = cmd.result()
 
-    plan = formula_repo.get_by_id(cmd.result())
-    logger.success(plan.uniques)
+    cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
+    cmd.execute()
+
+    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
+
+    # Update and print
+    cmd = UpdateWire(uuid=wire_id, sender=5452)
+    cmd.execute()
+    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
+
+
+def bar(*arg):
+    pass
 
 
 if __name__ == '__main__':

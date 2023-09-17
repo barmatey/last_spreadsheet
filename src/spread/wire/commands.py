@@ -7,6 +7,7 @@ from pydantic import Field
 
 from spread.abstract.command import Command
 from spread.abstract.pubsub import Subscriber
+from spread.formula.repository import FormulaRepo
 from spread.source.node import SourceNode
 from spread.source.repository import SourceRepo
 from spread.wire.model import Wire
