@@ -41,6 +41,7 @@ class SourceNode(Pubsub):
             sub.on_complete()
 
     def subscribe(self, subs: list[Subscriber]):
+        logger.debug(f"SourceNode.subscribe({subs})")
         for sub in subs:
             sub.on_before_start()
             for wire in self._source.wires:

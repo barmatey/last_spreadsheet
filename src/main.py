@@ -6,6 +6,8 @@ from loguru import logger
 #
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
+from spread.formula.repository import FormulaRepo
+from spread.sheet.commands import CreateGroupSheet
 from spread.source.commands import CreateSource
 from spread.source.repository import SourceRepo
 from spread.wire.commands import CreateWire, UpdateWire
@@ -14,7 +16,6 @@ from spreadsheet.cell.bootstrap import CellBootstrap
 from spreadsheet.cell.entity import Cell
 from spreadsheet.formula.bootstrap import FormulaBootstrap
 from spreadsheet.sheet.bootstrap import SheetBootstrap
-from spreadsheet.sheet.commands import CreateGroupSheet, CreateReportSheet
 from spreadsheet.sheet.repository import SheetRepo
 from spreadsheet.wire.bootstrap import WireBootstrap
 from spreadsheet.wire.entity import Wire
@@ -63,17 +64,22 @@ def print_hi():
     cmd.execute()
     source_id = cmd.result()
 
-    cmd = CreateWire(sender=1, receiver=2, amount=111, source_id=source_id)
+    cmd = CreateWire(sender=1, sub1='OS', receiver=2, amount=111, source_id=source_id)
     cmd.execute()
     wire_id = cmd.result()
 
     wire_repo: WireRepo = WireRepo()
     source_repo: SourceRepo = SourceRepo()
+    formula_repo: FormulaRepo = FormulaRepo()
 
     cmd = UpdateWire(uuid=wire_id, sender=123)
     cmd.execute()
 
+    cmd = CreateGroupSheet(source_id=source_id, ccols=['sender', 'sub1'])
+    cmd.execute()
 
+    plan = formula_repo.get_by_id(cmd.result())
+    print(plan.uniques)
 
 
 if __name__ == '__main__':
