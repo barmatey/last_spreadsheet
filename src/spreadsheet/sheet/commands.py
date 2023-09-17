@@ -12,6 +12,7 @@ from spreadsheet.cell.node import CellPubsub
 from spreadsheet.cell.repository import CellRepo
 from spreadsheet.cell import usecase as cell_usecase
 from spreadsheet.formula.collection.plan_items import PlanItems, PlanItemsPubsub
+from spreadsheet.formula.collection.sum_filtred import SumFiltred, SumFiltredPubsub
 from spreadsheet.formula.repository import FormulaRepo
 from spreadsheet.formula.collection.sorted_table import SortedTable, SortedTablePubsub
 from spreadsheet.sheet.bootstrap import SheetBootstrap
@@ -69,6 +70,7 @@ class CreateGroupSheet(Command):
 class CreateReportSheet(Command):
     source_id: UUID
     group_sheet_id: UUID
+    ccols: list[Ccol]
     uuid: UUID = Field(default_factory=uuid4)
 
     @helpers.decorators.timeit
@@ -77,6 +79,8 @@ class CreateReportSheet(Command):
         # Repositories
         cell_repo: CellRepo = CellBootstrap().get_repo()
         sheet_repo: SheetRepo = SheetBootstrap().get_repo()
+        wire_repo: WireRepo = WireBootstrap().get_repo()
+        formula_repo: FormulaRepo = FormulaBootstrap().get_repo()
 
         group_sheet = sheet_repo.get_by_id(self.group_sheet_id)
         blank_report_sheet = sheet_usecase.CreateSheet(
@@ -96,3 +100,4 @@ class CreateReportSheet(Command):
                 to_cell_pubsub = CellPubsub(to_cell)
 
                 from_cell_pubsub.subscribe(to_cell_pubsub)
+

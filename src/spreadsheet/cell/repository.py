@@ -3,6 +3,7 @@ from uuid import UUID
 
 from loguru import logger
 
+from spreadsheet.abstract.cell_value import CellValue
 from spreadsheet.cell.entity import Cell
 
 
@@ -29,6 +30,11 @@ class CellRepo(ABC):
 
     @abstractmethod
     def get_filtred(self, filter_by: dict, order_by: list[str] = None, asc=True) -> list[Cell]:
+        raise NotImplemented
+
+    @abstractmethod
+    def get_filtred_as_cell_values_table(self, columns: int, filter_by: dict, order_by: list[str] = None,
+                                         asc=True) -> list[list[CellValue]]:
         raise NotImplemented
 
     @abstractmethod
@@ -79,6 +85,25 @@ class CellRepoFake(CellRepo):
                 result = sorted(result, key=lambda x: (x.index[1], x.index[0]))
 
         return result
+
+    def get_filtred_as_cell_values_table(self, columns: int, filter_by: dict, order_by: list[str] = None,
+                                         asc=True) -> list[list[CellValue]]:
+        cells = self.get_filtred(filter_by, order_by, asc)
+        table = []
+        start = 0
+        end = columns
+        for i in range(0, columns):
+            row = []
+            for cell in cells[start:end]:
+                row.append(cell.value)
+            table.append(row)
+            start += columns
+            end += columns
+
+        for row in table:
+            print(row)
+        stop
+        return table
 
     def update(self, data: Cell):
         for i, cell in enumerate(self._data):

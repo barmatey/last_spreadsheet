@@ -1,5 +1,6 @@
 from uuid import UUID
 
+import helpers.decorators
 from spreadsheet.abstract.pubsub import Pubsub
 from .entity import Wire
 from .repository import WireRepo
@@ -64,6 +65,7 @@ class WirePubsub(Pubsub):
             for sub in wire.subs:
                 print(f"I need to update: {sub}")
 
+    # todo NEED TO OPTIMIZE
     def subscribe(self, subs: Pubsub | list[Pubsub]):
         if not isinstance(subs, list):
             subs = [subs]

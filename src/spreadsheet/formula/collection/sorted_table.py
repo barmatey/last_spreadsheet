@@ -46,7 +46,6 @@ class SortedTablePubsub(Pubsub):
         for sub in self._new_entity.subs:
             sub.on_complete()
 
-    # todo Should I log data in this code?
     def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
         if not isinstance(subs, list):
             subs = [subs]
@@ -69,7 +68,7 @@ class SortedTablePubsub(Pubsub):
     def on_complete(self):
         self.__sort_table()
         self._repo.update(self._new_entity)
-        logger.info(f"SortedTablePubsub.on_complete() => updating subs: {self._new_entity.subs}")
+        logger.debug(f"SortedTablePubsub.on_complete() => updating subs: {self._new_entity.subs}")
         self.notify()
 
     def __sort_table(self):
