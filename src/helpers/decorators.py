@@ -1,10 +1,13 @@
 import time
+import typing
 from functools import wraps
 
 from loguru import logger
 
+T = typing.TypeVar("T")
 
-def singleton(class_):
+
+def singleton(class_: T) -> T:
     instances = {}
 
     def getinstance(*args, **kwargs):
