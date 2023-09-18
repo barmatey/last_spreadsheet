@@ -26,3 +26,6 @@ class FormulaNodeRepo:
 
     def get_all(self) -> list[FormulaNode]:
         return list(self._data.values())
+
+    def destroy(self, formula: FormulaNode):
+        del self._data[formula.uuid]

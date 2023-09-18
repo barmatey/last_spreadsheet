@@ -41,7 +41,19 @@ class ReportFilterNode(FormulaNode):
         self._value.filter_by = filter_by
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
-        logger.warning("ReportFilterNode.on_update() not implemented")
+        if not isinstance(old_data, PlanItems):
+            raise TypeError(type(old_data))
+        if not isinstance(new_data, PlanItems):
+            raise TypeError(type(new_data))
+
+        if len(old_data.utable) > len(new_data.utable):
+            if self._value.index >= len(new_data.utable):
+                logger.warning("NotImpl")
+                return
+        if len(old_data.utable) < len(new_data.utable):
+            logger.warning("NotImpl")
+            return
+        self.on_subscribe(new_data)
 
     def on_complete(self):
         logger.debug(f"ReportFilterNode.on_complete() => notify {len(self._subs)} subs")

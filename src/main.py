@@ -66,7 +66,7 @@ def create_wires(source_id: UUID) -> list[UUID]:
     commands = []
     for i in range(0, 4):
         commands.append(
-            CreateWireNode(sender=i, receiver=i + 3, sub1=str(random.random()), amount=random.random(), source_id=source_id)
+            CreateWireNode(sender=i, receiver=i + 3, sub1=f"MySubconto", amount=random.random(), source_id=source_id)
         )
     results = []
     for cmd in commands:
@@ -93,7 +93,7 @@ def foo():
     cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
     cmd.execute()
 
-    cmd = UpdateWireNode(uuid=wire_id, sender=5452)
+    cmd = UpdateWireNode(uuid=wire_id, sender=2)
     cmd.execute()
 
     logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id)._subs}")
