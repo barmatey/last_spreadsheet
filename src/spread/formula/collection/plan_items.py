@@ -34,7 +34,7 @@ class PlanItems(Formula):
 class PlanItemsNode(FormulaNode):
     def __init__(self, value: PlanItems, subs: list[Subscriber] = None, uuid: UUID = None):
         self._value = value
-        self._old_value = None
+        self._old_value: PlanItems | None = None
         self._subs = subs if subs is not None else []
         self.uuid = uuid if uuid is not None else uuid4()
 
