@@ -115,7 +115,7 @@ def foo():
     cmd = UpdateWire(uuid=wire_id, sender=5452)
     cmd.execute()
 
-    logger.success(source_usecase.get_node_by_id(source_node_id)._model.wires)
+    logger.success(source_usecase.get_node_by_id(source_node_id)._value.wires)
 
 
 if __name__ == '__main__':

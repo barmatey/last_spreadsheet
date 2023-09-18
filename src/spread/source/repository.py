@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from helpers.decorators import singleton
-from spread.source.model import Source
+from spread.source.entity import Source
 from spread.source.node import SourceNode
 
 

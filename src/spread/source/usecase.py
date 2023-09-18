@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from spread.source.model import Source
+from spread.source.entity import Source
 from spread.source.node import SourceNode
 from spread.source.repository import SourceNodeRepo
 
