@@ -41,6 +41,9 @@ class PlanItemsNode(FormulaNode):
     def __repr__(self):
         return "PlanItemsNode"
 
+    def get_value(self) -> PlanItems:
+        return self._value
+
     def on_before_start(self):
         self._old_value = self._value.model_copy(deep=True)
 
@@ -105,6 +108,13 @@ def create_node(ccols: list[Ccol]) -> PlanItemsNode:
     entity = PlanItems(ccols=ccols)
     node = PlanItemsNode(entity)
     FormulaNodeRepo().add(node)
+    return node
+
+
+def get_node_by_id(uuid: UUID) -> PlanItemsNode:
+    node = FormulaNodeRepo().get_by_id(uuid)
+    if not isinstance(node, PlanItemsNode):
+        raise TypeError
     return node
 
 

@@ -76,34 +76,6 @@ def create_wires(source_id: UUID) -> list[UUID]:
     return results
 
 
-def print_hi():
-    cmd = CreateSourceNode()
-    cmd.execute()
-    source_id = cmd.result()
-
-    wires_ids = create_wires(source_id)
-    wire_id = wires_ids[0]
-
-    wire_repo: WireNodeRepo = WireNodeRepo()
-    source_repo: SourceRepo = SourceRepo()
-    formula_repo: FormulaNodeRepo = FormulaNodeRepo()
-
-    cmd = CreatePlanItemsNode(source_id=source_id, ccols=['sender', 'sub1'])
-    cmd.execute()
-    plan_items_id = cmd.result()
-
-    cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
-    cmd.execute()
-
-
-    # Update and print
-    cmd = UpdateWireNode(uuid=wire_id, sender=5452)
-    cmd.execute()
-    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
-    for sub in formula_repo.get_by_id(plan_items_id).subs:
-        logger.success(f"filter_by: {sub._model.filter_by}")
-
-
 def foo():
     formula_repo: FormulaNodeRepo = FormulaNodeRepo()
 
@@ -118,10 +90,15 @@ def foo():
     cmd.execute()
     plan_items_id = cmd.result()
 
+    cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
+    cmd.execute()
+
     cmd = UpdateWireNode(uuid=wire_id, sender=5452)
     cmd.execute()
 
-    logger.success(f"plan_items_value: {formula_repo.get_by_id(plan_items_id)._value}")
+    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id)._subs}")
+    for sub in formula_repo.get_by_id(plan_items_id)._subs:
+        logger.success(f"filter_by: {sub._value.filter_by}")
 
 
 if __name__ == '__main__':

@@ -13,6 +13,7 @@ from spread.wire.entity import Ccol
 
 from spread.source import usecase as source_usecase
 from spread.formula.collection import plan_items
+from spread.formula.collection import report_filter
 
 
 class CreatePlanItemsNode(Command):
@@ -47,16 +48,14 @@ class CreateReportFilters(Command):
 
     def execute(self):
         logger.info("CreateReportFilters.execute()")
-        formula_repo: FormulaNodeRepo = FormulaNodeRepo()
-        plan_items: PlanItems = formula_repo.get_by_id(self.plan_items_uuid)
+        plan_items_node = plan_items.get_node_by_id(self.plan_items_uuid)
+        report_filter_nodes = [report_filter.create_node(i) for i in range(0, len(plan_items_node.get_value().utable))]
 
-        report_filter_nodes = []
-        for i in range(0, len(plan_items.utable)):
-            report_filter = ReportFilter(index=i)
-            formula_repo.add(report_filter)
-            report_filter_nodes.append(ReportFilterNode(report_filter))
+        plan_items_node.subscribe(report_filter_nodes)
 
-        PlanItemsNode(plan_items).subscribe(report_filter_nodes)
+        plan_items.save_node(plan_items_node)
+        for node in report_filter_nodes:
+            report_filter.save_node(node)
 
     def result(self):
         pass
