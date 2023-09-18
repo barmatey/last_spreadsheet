@@ -8,11 +8,11 @@ from loguru import logger
 #
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
-from spread.formula.repository import FormulaRepo
-from spread.sheet.commands import CreatePlanItems, CreateReportFilters
+from spread.formula.repository import FormulaNodeRepo
+from spread.sheet.commands import CreatePlanItemsNode, CreateReportFilters
 from spread.source.commands import CreateSourceNode
 from spread.source.repository import SourceRepo
-from spread.wire.commands import CreateWireNode, UpdateWire
+from spread.wire.commands import CreateWireNode, UpdateWireNode
 from spread.wire.repository import WireNodeRepo
 from spreadsheet.cell.bootstrap import CellBootstrap
 from spreadsheet.cell.entity import Cell
@@ -86,9 +86,9 @@ def print_hi():
 
     wire_repo: WireNodeRepo = WireNodeRepo()
     source_repo: SourceRepo = SourceRepo()
-    formula_repo: FormulaRepo = FormulaRepo()
+    formula_repo: FormulaNodeRepo = FormulaNodeRepo()
 
-    cmd = CreatePlanItems(source_id=source_id, ccols=['sender', 'sub1'])
+    cmd = CreatePlanItemsNode(source_id=source_id, ccols=['sender', 'sub1'])
     cmd.execute()
     plan_items_id = cmd.result()
 
@@ -97,7 +97,7 @@ def print_hi():
 
 
     # Update and print
-    cmd = UpdateWire(uuid=wire_id, sender=5452)
+    cmd = UpdateWireNode(uuid=wire_id, sender=5452)
     cmd.execute()
     logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id).subs}")
     for sub in formula_repo.get_by_id(plan_items_id).subs:
@@ -105,6 +105,8 @@ def print_hi():
 
 
 def foo():
+    formula_repo: FormulaNodeRepo = FormulaNodeRepo()
+
     cmd = CreateSourceNode()
     cmd.execute()
     source_node_id = cmd.result()
@@ -112,10 +114,14 @@ def foo():
     wire_ids = create_wires(source_node_id)
     wire_id = wire_ids[0]
 
-    cmd = UpdateWire(uuid=wire_id, sender=5452)
+    cmd = CreatePlanItemsNode(source_id=source_node_id, ccols=['sender', 'sub1'])
+    cmd.execute()
+    plan_items_id = cmd.result()
+
+    cmd = UpdateWireNode(uuid=wire_id, sender=5452)
     cmd.execute()
 
-    logger.success(source_usecase.get_node_by_id(source_node_id)._value.wires)
+    logger.success(f"plan_items_value: {formula_repo.get_by_id(plan_items_id)._value}")
 
 
 if __name__ == '__main__':

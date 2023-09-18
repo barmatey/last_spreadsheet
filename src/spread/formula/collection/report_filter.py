@@ -7,7 +7,7 @@ from spread.abstract.pubsub import Pubsub, Subscriber
 from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items import PlanItems
 from spread.formula.model import Formula
-from spread.formula.repository import FormulaRepo
+from spread.formula.repository import FormulaNodeRepo
 from spread.wire.entity import Ccol
 
 
@@ -21,7 +21,7 @@ class ReportFilter(Formula):
 class ReportFilterNode(Pubsub):
     def __init__(self, model: ReportFilter):
         self._model = model
-        self._formula_repo: FormulaRepo = FormulaRepo()
+        self._formula_repo: FormulaNodeRepo = FormulaNodeRepo()
 
     def __repr__(self):
         return "ReportFilterNode"

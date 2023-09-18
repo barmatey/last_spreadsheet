@@ -8,8 +8,8 @@ from spread.wire.entity import Wire
 
 
 class WireNode(Pubsub):
-    def __init__(self, entity: Wire, subs: list[Subscriber] = None, uuid: UUID = None):
-        self._value = entity
+    def __init__(self, value: Wire, subs: list[Subscriber] = None, uuid: UUID = None):
+        self._value = value
         self._old_value = None
         self._subs = subs if subs is not None else []
         self.uuid = uuid if uuid is not None else uuid4()

@@ -3,26 +3,26 @@ from uuid import UUID
 from loguru import logger
 
 from helpers.decorators import singleton
-from spread.formula.model import Formula
+from spread.formula.node import FormulaNode
 
 
 @singleton
-class FormulaRepo:
+class FormulaNodeRepo:
     def __init__(self):
         self._data = {}
 
-    def add(self, formula: Formula):
+    def add(self, formula: FormulaNode):
         if self._data.get(formula.uuid) is not None:
             raise Exception
         self._data[formula.uuid] = formula
 
-    def update(self, formula: Formula):
+    def update(self, formula: FormulaNode):
         if self._data.get(formula.uuid) is None:
             raise LookupError
         self._data[formula.uuid] = formula
 
-    def get_by_id(self, uuid: UUID) -> Formula:
+    def get_by_id(self, uuid: UUID) -> FormulaNode:
         return self._data[uuid]
 
-    def get_all(self) -> list[Formula]:
+    def get_all(self) -> list[FormulaNode]:
         return list(self._data.values())

@@ -6,10 +6,6 @@ from loguru import logger
 from pydantic import Field
 
 from spread.abstract.command import Command
-from spread.abstract.pubsub import Subscriber
-from spread.wire.entity import Wire
-from spread.wire.node import WireNode
-from spread.wire.repository import WireNodeRepo
 from spread.source import usecase as source_usecase
 from spread.wire import usecase as wire_usecase
 
@@ -47,7 +43,7 @@ class CreateWireNode(Command):
         return self._result
 
 
-class UpdateWire(Command):
+class UpdateWireNode(Command):
     uuid: UUID
     sender: typing.Optional[float] = None
     receiver: typing.Optional[float] = None
@@ -57,7 +53,7 @@ class UpdateWire(Command):
     comment: typing.Optional[str] = None
     currency: typing.Optional[str] = None
     date: typing.Optional[datetime] = None
-    _result: Wire | None = None
+    _result: None = None
 
     def execute(self):
         logger.info("UpdateWire.execute()")
