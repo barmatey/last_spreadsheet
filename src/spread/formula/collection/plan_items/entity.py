@@ -43,6 +43,12 @@ class PlanItemsNode(FormulaNode):
     def get_value(self) -> PlanItems:
         return self._value
 
+    def get_old_value(self) -> PlanItems:
+        return self._old_value
+
+    def get_subs(self) -> list[Subscriber]:
+        return self._subs
+
     def on_before_start(self):
         self._old_value = self._value.model_copy(deep=True)
 

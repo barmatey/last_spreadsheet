@@ -1,40 +1,21 @@
 from abc import ABC, abstractmethod
-from typing import Union
 
-from spreadsheet.abstract.cell_value import CellTable
+from spreadsheet.broker.event import Event
 
 
 class Subscriber(ABC):
-    @abstractmethod
-    def on_before_start(self):
-        raise NotImplemented
-
-    @abstractmethod
-    def on_subscribe(self, data: CellTable):
-        raise NotImplemented
-
-    @abstractmethod
-    def on_update(self, old_data: CellTable, new_data: CellTable):
-        raise NotImplemented
-
-    @abstractmethod
-    def on_complete(self):
-        raise NotImplemented
+    pass
 
 
 class Publisher(ABC):
     @abstractmethod
-    def get_entity(self):
+    def get_subs(self) -> list[Subscriber]:
         raise NotImplemented
 
     @abstractmethod
-    def notify(self):
-        raise NotImplemented
-
-    @abstractmethod
-    def subscribe(self, subs: Union['Pubsub', list['Pubsub']]):
+    def parse_events(self) -> list[Event]:
         raise NotImplemented
 
 
-class Pubsub(Publisher, Subscriber, ABC):
+class Pubsub(Subscriber, Publisher, ABC):
     pass

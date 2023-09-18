@@ -26,6 +26,9 @@ class ReportFilterNode(FormulaNode):
     def __repr__(self):
         return "ReportFilterNode"
 
+    def get_value(self) -> ReportFilter:
+        return self._value
+
     def on_before_start(self):
         self._old_value = self._value.model_copy(deep=True)
 

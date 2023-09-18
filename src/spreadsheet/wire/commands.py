@@ -1,31 +1,51 @@
-from typing import Optional
-from uuid import UUID, uuid4
 from datetime import datetime
+from uuid import uuid4, UUID
 
 from loguru import logger
 from pydantic import Field
 
-from spreadsheet.abstract.command import Command
-from spreadsheet.wire.bootstrap import WireBootstrap, WireRepo
-from spreadsheet.wire.usecase import UpdateWire as UpdateWireUsecase
+from spreadsheet.broker.command import Command
+from spreadsheet.broker.event import Event
+
+from spreadsheet.source import usecases as source_usecase
+from spreadsheet.wire import usecases as wire_usecase
+
+
+class CreateWireNode(Command):
+    source_id: UUID
+    sender: float
+    receiver: float
+    amount: float
+    sub1: str = ""
+    sub2: str = ""
+    comment: str = ""
+    currency: str = "RUB"
+    date: datetime = Field(default_factory=datetime.now)
+    uuid: UUID = Field(default_factory=uuid4)
+    result: UUID | None = None
+    new_events: list[Event] = Field(default_factory=list)
+
+    def execute(self):
+        logger.info("CreateWireNode.execute()")
+        # Create
+        source_node = source_usecase.get_node_by_id(self.source_id)
+        wire_node = wire_usecase.create_node(**self.model_dump(exclude={"_result", "source_id"}))
+        wire_node.subscribe([source_node])
+
+        # Save
+        source_usecase.save_node(source_node)
+        wire_usecase.save_node(wire_node)
+
+        self.new_events.extend(source_node.parse_events())
+
+    def parse_new_events(self) -> list[Event]:
+        events = self._new_events
+        self.new_events = []
+        return events
 
 
 class UpdateWire(Command):
-    wire_id: UUID
-    currency: Optional[str] = None
-    date: Optional[datetime] = None
-    sender: Optional[float] = None
-    receiver: Optional[float] = None
-    amount: Optional[float] = None
-    sub1: Optional[str] = None
-    sub2: Optional[str] = None
-    comment: Optional[str] = None
-    source_id: Optional[UUID] = None
     uuid: UUID = Field(default_factory=uuid4)
 
     def execute(self):
         logger.info("UpdateWire.execute()")
-        wire_repo: WireRepo = WireBootstrap().get_repo()
-        data = self.model_dump(exclude_none=True, exclude={"uuid", "wire_id"})
-        UpdateWireUsecase(wire_repo).load_entity_by_id(self.wire_id).update(data).notify_subscribers()
-
