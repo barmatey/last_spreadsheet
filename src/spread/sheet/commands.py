@@ -3,16 +3,12 @@ from uuid import UUID, uuid4
 from loguru import logger
 from pydantic import Field
 
+import spread.formula.collection.plan_items.usecase
 from spread.abstract.command import Command
-from spread.formula.collection.plan_items import PlanItems, PlanItemsNode
-from spread.formula.collection.report_filter import ReportFilter, ReportFilterNode
-from spread.formula.repository import FormulaNodeRepo
-from spread.source.node import SourceNode
-from spread.source.repository import SourceRepo
 from spread.wire.entity import Ccol
 
 from spread.source import usecase as source_usecase
-from spread.formula.collection import plan_items
+from spread.formula.collection.plan_items import entity as plan_items
 from spread.formula.collection import report_filter
 
 
@@ -27,12 +23,12 @@ class CreatePlanItemsNode(Command):
 
         # Create
         source_node = source_usecase.get_node_by_id(self.source_id)
-        plan_items_node = plan_items.create_node(self.ccols)
+        plan_items_node = spread.formula.collection.plan_items.usecase.create_node(self.ccols)
         source_node.subscribe([plan_items_node])
 
         # Save
         source_usecase.save_node(source_node)
-        plan_items.save_node(plan_items_node)
+        spread.formula.collection.plan_items.usecase.save_node(plan_items_node)
 
         # Result
         self._result = plan_items_node.uuid
@@ -48,12 +44,12 @@ class CreateReportFilters(Command):
 
     def execute(self):
         logger.info("CreateReportFilters.execute()")
-        plan_items_node = plan_items.get_node_by_id(self.plan_items_uuid)
+        plan_items_node = spread.formula.collection.plan_items.usecase.get_node_by_id(self.plan_items_uuid)
         report_filter_nodes = [report_filter.create_node(i) for i in range(0, len(plan_items_node.get_value().utable))]
 
         plan_items_node.subscribe(report_filter_nodes)
 
-        plan_items.save_node(plan_items_node)
+        spread.formula.collection.plan_items.usecase.save_node(plan_items_node)
         for node in report_filter_nodes:
             report_filter.save_node(node)
 

@@ -9,7 +9,6 @@ from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.model import Formula
 from spread.formula.node import FormulaNode
 from spread.wire.entity import Ccol, Wire
-from spread.formula.repository import FormulaNodeRepo
 
 
 class PlanItems(Formula):
@@ -105,21 +104,3 @@ class PlanItemsNode(FormulaNode):
 
     def unsubscribe(self, subs: list[Subscriber]):
         raise NotImplemented
-
-
-def create_node(ccols: list[Ccol]) -> PlanItemsNode:
-    entity = PlanItems(ccols=ccols)
-    node = PlanItemsNode(entity)
-    FormulaNodeRepo().add(node)
-    return node
-
-
-def get_node_by_id(uuid: UUID) -> PlanItemsNode:
-    node = FormulaNodeRepo().get_by_id(uuid)
-    if not isinstance(node, PlanItemsNode):
-        raise TypeError
-    return node
-
-
-def save_node(data: PlanItemsNode):
-    FormulaNodeRepo().update(data)
