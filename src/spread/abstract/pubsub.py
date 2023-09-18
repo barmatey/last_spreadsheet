@@ -30,6 +30,10 @@ class Publisher(ABC):
     def subscribe(self, subs: list[Subscriber]):
         raise NotImplemented
 
+    @abstractmethod
+    def unsubscribe(self, subs: list[Subscriber]):
+        raise NotImplemented
+
 
 class Pubsub(Subscriber, Publisher, ABC):
     pass

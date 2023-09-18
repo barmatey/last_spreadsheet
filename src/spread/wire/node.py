@@ -48,3 +48,6 @@ class WireNode(Pubsub):
             sub.on_subscribe(self._value)
             sub.on_complete()
             self._subs.append(sub)
+
+    def unsubscribe(self, subs: list[Subscriber]):
+        raise NotImplemented

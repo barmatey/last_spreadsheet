@@ -65,6 +65,9 @@ class ReportFilterNode(FormulaNode):
     def subscribe(self, subs: list[Subscriber]):
         raise NotImplemented
 
+    def unsubscribe(self, subs: list[Subscriber]):
+        raise NotImplemented
+
 
 def create_node(index: int) -> ReportFilterNode:
     entity = ReportFilter(index=index)

@@ -1,4 +1,4 @@
-from spread.abstract.pubsub import Pubsub, Publisher, Subscriber
+from spread.abstract.pubsub import Pubsub, Subscriber
 from spread.abstract.pydantic_model import PydanticModel
 from spread.cell.model import Cell
 from spread.cell.repository import CellRepo
@@ -42,3 +42,5 @@ class CellNode(Pubsub):
             self._cell.subs.append(sub)
             self._cell_repo.update(self._cell)
 
+    def unsubscribe(self, subs: list[Subscriber]):
+        raise NotImplemented

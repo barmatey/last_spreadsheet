@@ -103,6 +103,9 @@ class PlanItemsNode(FormulaNode):
             sub.on_complete()
             self._subs.append(sub)
 
+    def unsubscribe(self, subs: list[Subscriber]):
+        raise NotImplemented
+
 
 def create_node(ccols: list[Ccol]) -> PlanItemsNode:
     entity = PlanItems(ccols=ccols)
