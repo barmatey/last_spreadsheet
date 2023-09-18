@@ -4,11 +4,11 @@ from loguru import logger
 from pydantic import Field
 
 import spread.formula.collection.plan_items.usecase
+import spread.formula.collection.report_filter.usecase
 from spread.abstract.command import Command
 from spread.wire.entity import Ccol
 
 from spread.source import usecase as source_usecase
-from spread.formula.collection.report_filter import entity as report_filter
 
 
 class CreatePlanItemsNode(Command):
@@ -44,13 +44,13 @@ class CreateReportFilters(Command):
     def execute(self):
         logger.info("CreateReportFilters.execute()")
         plan_items_node = spread.formula.collection.plan_items.usecase.get_node_by_id(self.plan_items_uuid)
-        report_filter_nodes = [report_filter.create_node(i) for i in range(0, len(plan_items_node.get_value().utable))]
+        report_filter_nodes = [spread.formula.collection.report_filter.usecase.create_node(i) for i in range(0, len(plan_items_node.get_value().utable))]
 
         plan_items_node.subscribe(report_filter_nodes)
 
         spread.formula.collection.plan_items.usecase.save_node(plan_items_node)
         for node in report_filter_nodes:
-            report_filter.save_node(node)
+            spread.formula.collection.report_filter.usecase.save_node(node)
 
     def result(self):
         pass

@@ -8,7 +8,6 @@ from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items.entity import PlanItems
 from spread.formula.model import Formula
 from spread.formula.node import FormulaNode
-from spread.formula.repository import FormulaNodeRepo
 
 
 class ReportFilter(Formula):
@@ -66,14 +65,3 @@ class ReportFilterNode(FormulaNode):
 
     def unsubscribe(self, subs: list[Subscriber]):
         raise NotImplemented
-
-
-def create_node(index: int) -> ReportFilterNode:
-    entity = ReportFilter(index=index)
-    node = ReportFilterNode(entity)
-    FormulaNodeRepo().add(node)
-    return node
-
-
-def save_node(data: ReportFilterNode):
-    FormulaNodeRepo().update(data)
