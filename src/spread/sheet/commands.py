@@ -8,8 +8,7 @@ from spread.abstract.command import Command
 from spread.wire.entity import Ccol
 
 from spread.source import usecase as source_usecase
-from spread.formula.collection.plan_items import entity as plan_items
-from spread.formula.collection import report_filter
+from spread.formula.collection.report_filter import entity as report_filter
 
 
 class CreatePlanItemsNode(Command):

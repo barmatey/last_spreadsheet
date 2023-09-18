@@ -1,7 +1,7 @@
 from spread.abstract.pubsub import Subscriber
 from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items.entity import PlanItems
-from spread.formula.collection.report_filter import ReportFilter
+from spread.formula.collection.report_filter.entity import ReportFilter
 
 
 class PlanItemsUpdated(PydanticModel):
@@ -15,4 +15,5 @@ class PlanItemsUpdated(PydanticModel):
         if new_len < old_len:
             for sub in self.subs:
                 if isinstance(sub, ReportFilter):
-                    pass
+                    if sub.index >= new_len:
+                        pass
