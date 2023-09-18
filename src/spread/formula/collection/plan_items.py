@@ -8,7 +8,7 @@ from spread.abstract.pubsub import Subscriber, Pubsub
 from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.model import Formula
 from spread.formula.repository import FormulaRepo
-from spread.wire.model import Ccol, Wire
+from spread.wire.entity import Ccol, Wire
 
 
 class PlanItems(Formula):
@@ -23,7 +23,7 @@ class PlanItems(Formula):
 
     def partial_copy(self):
         return self.__class__(
-            subs=self.subs.copy(),
+            subs=self.subs,
             uniques=self.uniques.copy(),
             utable=self.utable.copy(),
             ccols=self.ccols.copy(),

@@ -8,7 +8,7 @@ from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items import PlanItems
 from spread.formula.model import Formula
 from spread.formula.repository import FormulaRepo
-from spread.wire.model import Ccol
+from spread.wire.entity import Ccol
 
 
 class ReportFilter(Formula):
@@ -39,7 +39,8 @@ class ReportFilterNode(Pubsub):
         self._model.filter_by = filter_by
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
-        logger.warning("ReportFilterNode.on_update() not impleented")
+        logger.warning("ReportFilterNode.on_update() not implemented")
+        # del self._model
 
     def on_complete(self):
         logger.debug(f"ReportFilterNode.on_complete() => notify {len(self._model.subs)} subs")

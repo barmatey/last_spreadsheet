@@ -7,15 +7,14 @@ from pydantic import Field
 
 from spread.abstract.command import Command
 from spread.abstract.pubsub import Subscriber
-from spread.formula.repository import FormulaRepo
-from spread.source.node import SourceNode
-from spread.source.repository import SourceRepo
-from spread.wire.model import Wire
+from spread.wire.entity import Wire
 from spread.wire.node import WireNode
-from spread.wire.repository import WireRepo
+from spread.wire.repository import WireNodeRepo
+from spread.source import usecase as source_usecase
+from spread.wire import usecase as wire_usecase
 
 
-class CreateWire(Command):
+class CreateWireNode(Command):
     source_id: UUID
     sender: float
     receiver: float
@@ -25,23 +24,22 @@ class CreateWire(Command):
     comment: str = ""
     currency: str = "RU"
     date: datetime = Field(default_factory=datetime.now)
-    subs: list[Subscriber] = Field(default_factory=list)
     uuid: UUID = Field(default_factory=uuid4)
     _result: UUID | None = None
 
     def execute(self):
-        logger.info("CreateWire.execute()")
-        source_repo = SourceRepo()
-        source = source_repo.get_by_id(self.source_id)
-        source_node = SourceNode(source)
-
-        wire_repo: WireRepo = WireRepo()
-        wire = Wire(**self.model_dump(exclude={"_result", "source_id"}))
-        wire_repo.add(wire)
-        wire_node = WireNode(wire)
+        logger.info("CreateWireNode.execute()")
+        # Execute
+        source_node = source_usecase.get_node_by_id(self.source_id)
+        wire_node = wire_usecase.create_node(**self.model_dump(exclude={"_result", "source_id"}))
         wire_node.subscribe([source_node])
 
-        self._result = wire.uuid
+        # Save
+        source_usecase.save_node(source_node)
+        wire_usecase.save_node(wire_node)
+
+        # Result
+        self._result = wire_node.uuid
 
     def result(self):
         if self._result is None:
@@ -63,16 +61,9 @@ class UpdateWire(Command):
 
     def execute(self):
         logger.info("UpdateWire.execute()")
-        wire_repo: WireRepo = WireRepo()
-        target_wire = wire_repo.get_by_id(self.uuid)
-        new_wire = target_wire.partial_copy()
-        wire_node = WireNode(target_wire)
-
-        for key, value in self.model_dump(exclude_none=True).items():
-            new_wire.__setattr__(key, value)
-        wire_node.on_before_start()
-        wire_node.on_update(target_wire, new_wire)
-        wire_node.on_complete()
+        wire_node = wire_usecase.get_node_by_id(self.uuid)
+        wire_node.set_entity_fields(self.model_dump(exclude_none=True, exclude={"_result"}))
+        wire_usecase.save_node(wire_node)
 
     def result(self):
         return None

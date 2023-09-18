@@ -10,10 +10,10 @@ from loguru import logger
 # logger.add(sys.stderr, level="INFO")
 from spread.formula.repository import FormulaRepo
 from spread.sheet.commands import CreatePlanItems, CreateReportFilters
-from spread.source.commands import CreateSource
+from spread.source.commands import CreateSourceNode
 from spread.source.repository import SourceRepo
-from spread.wire.commands import CreateWire, UpdateWire
-from spread.wire.repository import WireRepo
+from spread.wire.commands import CreateWireNode, UpdateWire
+from spread.wire.repository import WireNodeRepo
 from spreadsheet.cell.bootstrap import CellBootstrap
 from spreadsheet.cell.entity import Cell
 from spreadsheet.formula.bootstrap import FormulaBootstrap
@@ -21,6 +21,7 @@ from spreadsheet.sheet.bootstrap import SheetBootstrap
 from spreadsheet.sheet.repository import SheetRepo
 from spreadsheet.wire.bootstrap import WireBootstrap
 from spreadsheet.wire.entity import Wire
+from spread.source import usecase as source_usecase
 
 
 def print_table():
@@ -65,7 +66,7 @@ def create_wires(source_id: UUID) -> list[UUID]:
     commands = []
     for i in range(0, 4):
         commands.append(
-            CreateWire(sender=i, receiver=i + 3, sub1=str(random.random()), amount=random.random(), source_id=source_id)
+            CreateWireNode(sender=i, receiver=i + 3, sub1=str(random.random()), amount=random.random(), source_id=source_id)
         )
     results = []
     for cmd in commands:
@@ -76,14 +77,14 @@ def create_wires(source_id: UUID) -> list[UUID]:
 
 
 def print_hi():
-    cmd = CreateSource()
+    cmd = CreateSourceNode()
     cmd.execute()
     source_id = cmd.result()
 
     wires_ids = create_wires(source_id)
     wire_id = wires_ids[0]
 
-    wire_repo: WireRepo = WireRepo()
+    wire_repo: WireNodeRepo = WireNodeRepo()
     source_repo: SourceRepo = SourceRepo()
     formula_repo: FormulaRepo = FormulaRepo()
 
@@ -103,9 +104,20 @@ def print_hi():
         logger.success(f"filter_by: {sub._model.filter_by}")
 
 
-def bar(*arg):
-    pass
+def foo():
+    cmd = CreateSourceNode()
+    cmd.execute()
+    source_node_id = cmd.result()
+
+    wire_ids = create_wires(source_node_id)
+    wire_id = wire_ids[0]
+
+    cmd = UpdateWire(uuid=wire_id, sender=5452)
+    cmd.execute()
+
+    logger.success(source_usecase.get_node_by_id(source_node_id)._model.wires)
 
 
 if __name__ == '__main__':
-    print_hi()
+    # print_hi()
+    foo()

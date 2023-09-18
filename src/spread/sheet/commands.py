@@ -9,7 +9,7 @@ from spread.formula.collection.report_filter import ReportFilter, ReportFilterNo
 from spread.formula.repository import FormulaRepo
 from spread.source.node import SourceNode
 from spread.source.repository import SourceRepo
-from spread.wire.model import Ccol
+from spread.wire.entity import Ccol
 
 
 class CreatePlanItems(Command):
