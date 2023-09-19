@@ -5,7 +5,7 @@ from spread.abstract.event import Event
 from spread.abstract.pydantic_model import PydanticModel
 
 
-class Base:
+class __Base:
     def __init__(self, uuid: UUID | None):
         self.uuid = uuid if uuid is not None else uuid4()
         self._events = set()
@@ -16,7 +16,7 @@ class Base:
         return events
 
 
-class Subscriber(Base, ABC):
+class Subscriber(__Base, ABC):
     @abstractmethod
     def on_before_start(self):
         raise NotImplemented
@@ -38,7 +38,7 @@ class Subscriber(Base, ABC):
         raise NotImplemented
 
 
-class Publisher(Base, ABC):
+class Publisher(__Base, ABC):
 
     @abstractmethod
     def notify(self):

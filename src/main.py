@@ -5,6 +5,7 @@ from loguru import logger
 #
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
+from broker.messagebus import MessageBus
 from spread.formula.repository import FormulaNodeRepo
 from spread.formula.collection.report_filter.commands import CreateReportFilters
 from spread.formula.collection.plan_items.commands import CreatePlanItemsNode
@@ -42,11 +43,17 @@ def foo():
     cmd.execute()
 
     cmd = UpdateWireNode(uuid=wire_id, sender=1)
-    cmd.execute()
+    execute(cmd)
 
     logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id)._subs}")
     for sub in formula_repo.get_by_id(plan_items_id)._subs:
         logger.success(f"filter_by: {sub._value.filter_by}")
+
+
+def execute(cmd):
+    bus = MessageBus()
+    bus.push_command(cmd)
+    bus.run()
 
 
 if __name__ == '__main__':

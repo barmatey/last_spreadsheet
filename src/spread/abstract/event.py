@@ -1,7 +1,6 @@
 from uuid import UUID
 
-from spread.abstract.pydantic_model import PydanticModel
 
-
-class Event(PydanticModel):
-    uuid: UUID
+class Event:
+    def __init__(self, uuid: UUID):
+        self.uuid = uuid

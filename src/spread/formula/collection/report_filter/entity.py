@@ -6,6 +6,7 @@ from pydantic import Field
 from spread.abstract.pubsub import Subscriber
 from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items.entity import PlanItems
+from spread.formula.collection.report_filter.events import ReportFilterDestroyed
 from spread.formula.model import Formula
 from spread.formula.node import FormulaNode
 
@@ -47,6 +48,9 @@ class ReportFilterNode(FormulaNode):
     def on_unsubscribe(self):
         logger.warning("Unsubscribe method")
         self._parents_count -= 1
+        if self._parents_count == 0:
+            logger.warning("create an event")
+            self._events.add(ReportFilterDestroyed(uuid=self.uuid))
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(old_data, PlanItems):
