@@ -6,6 +6,7 @@ from spread.cell.repository import CellRepo
 
 class CellNode(Pubsub):
     def __init__(self, cell: Cell):
+        super().__init__()
         self._old_cell = cell
         self._cell = cell.partial_copy()
         self._cell_repo = CellRepo()

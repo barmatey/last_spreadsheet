@@ -6,6 +6,7 @@ from loguru import logger
 from pydantic import Field
 
 from spread.abstract.command import Command
+from spread.abstract.pubsub import Pubsub
 from spread.source import usecase as source_usecase
 from spread.wire import usecase as wire_usecase
 
@@ -21,9 +22,8 @@ class CreateWireNode(Command):
     currency: str = "RU"
     date: datetime = Field(default_factory=datetime.now)
     uuid: UUID = Field(default_factory=uuid4)
-    _result: UUID | None = None
 
-    def execute(self):
+    def execute(self) -> list[Pubsub]:
         logger.info("CreateWireNode.execute()")
         # Execute
         source_node = source_usecase.get_node_by_id(self.source_id)
@@ -31,16 +31,9 @@ class CreateWireNode(Command):
         wire_node.subscribe([source_node])
 
         # Save
-        source_usecase.save_node(source_node)  # Should I do this?
         wire_usecase.save_node(wire_node)
 
-        # Result
-        self._result = wire_node.uuid
-
-    def result(self):
-        if self._result is None:
-            raise Exception
-        return self._result
+        return [wire_node]
 
 
 class UpdateWireNode(Command):
@@ -53,13 +46,10 @@ class UpdateWireNode(Command):
     comment: typing.Optional[str] = None
     currency: typing.Optional[str] = None
     date: typing.Optional[datetime] = None
-    _result: None = None
 
-    def execute(self):
+    def execute(self) -> list[Pubsub]:
         logger.info("UpdateWire.execute()")
         wire_node = wire_usecase.get_node_by_id(self.uuid)
         wire_node.set_entity_fields(self.model_dump(exclude_none=True, exclude={"_result"}))
         wire_usecase.save_node(wire_node)
-
-    def result(self):
-        return None
+        return [wire_node]

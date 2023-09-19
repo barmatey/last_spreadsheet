@@ -20,8 +20,8 @@ def create_wires(source_id: UUID) -> list[UUID]:
         )
     results = []
     for cmd in commands:
-        cmd.execute()
-        results.append(cmd.result())
+        temp = cmd.execute()
+        results.append(temp[0].uuid)
 
     return results
 
@@ -30,15 +30,13 @@ def foo():
     formula_repo: FormulaNodeRepo = FormulaNodeRepo()
 
     cmd = CreateSourceNode()
-    cmd.execute()
-    source_node_id = cmd.result()
+    source_node_id = cmd.execute()[0].uuid
 
     wire_ids = create_wires(source_node_id)
     wire_id = wire_ids[0]
 
     cmd = CreatePlanItemsNode(source_id=source_node_id, ccols=['sender', 'sub1'])
-    cmd.execute()
-    plan_items_id = cmd.result()
+    plan_items_id = cmd.execute()[0].uuid
 
     cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
     cmd.execute()

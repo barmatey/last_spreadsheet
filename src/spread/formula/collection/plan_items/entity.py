@@ -32,6 +32,7 @@ class PlanItems(Formula):
 
 class PlanItemsNode(FormulaNode):
     def __init__(self, value: PlanItems, subs: set[Subscriber] = None, uuid: UUID = None):
+        super().__init__(uuid)
         self._value = value
         self._old_value: PlanItems | None = None
         self._subs = subs if subs is not None else set()

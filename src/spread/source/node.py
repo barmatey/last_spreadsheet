@@ -10,6 +10,7 @@ from spread.wire.entity import Wire
 
 class SourceNode(Pubsub):
     def __init__(self, value: Source, subs: list[Subscriber] = None, uuid: UUID = None):
+        super().__init__(uuid)
         self.uuid = uuid if uuid is not None else uuid4()
         self._value = value
         self._subs = subs if subs is not None else []

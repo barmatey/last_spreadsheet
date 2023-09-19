@@ -18,6 +18,7 @@ class ReportFilter(Formula):
 
 class ReportFilterNode(FormulaNode):
     def __init__(self, value: ReportFilter, parents_count = 0, subs: list[Subscriber] = None, uuid: UUID = None):
+        super().__init__(uuid)
         self._value = value
         self._old_value = None
         self._subs = subs if subs is not None else []
