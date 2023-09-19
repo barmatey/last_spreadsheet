@@ -14,6 +14,7 @@ class MessageBus:
     def __init__(self):
         self._event_queue: deque[Event] = deque()
         self._command_queue: deque[Command] = deque()
+        self.results = {}
 
     def push_command(self, cmd: Command):
         self._command_queue.append(cmd)
@@ -23,6 +24,7 @@ class MessageBus:
             cmd = self._command_queue.popleft()
             cmd.execute()
             self._event_queue.extend(cmd.parse_new_events())
+            self.results[cmd.get_uuid()] = cmd.get_result()
 
             while self._event_queue:
                 event = self._event_queue.popleft()

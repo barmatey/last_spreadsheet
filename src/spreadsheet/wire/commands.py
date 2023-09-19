@@ -29,7 +29,7 @@ class CreateWireNode(Command):
         logger.info("CreateWireNode.execute()")
         # Create
         source_node = source_usecase.get_node_by_id(self.source_id)
-        wire_node = wire_usecase.create_node(**self.model_dump(exclude={"_result", "source_id"}))
+        wire_node = wire_usecase.create_node(self.model_dump(exclude={"_result", "source_id"}))
         wire_node.subscribe([source_node])
 
         # Save
@@ -37,15 +37,15 @@ class CreateWireNode(Command):
         wire_usecase.save_node(wire_node)
 
         self.new_events.extend(source_node.parse_events())
+        self.result = wire_node.uuid
+
+    def get_uuid(self) -> UUID:
+        return self.uuid
+
+    def get_result(self):
+        return self.result
 
     def parse_new_events(self) -> list[Event]:
         events = self._new_events
         self.new_events = []
         return events
-
-
-class UpdateWire(Command):
-    uuid: UUID = Field(default_factory=uuid4)
-
-    def execute(self):
-        logger.info("UpdateWire.execute()")

@@ -26,13 +26,18 @@ def create_wires(source_id: UUID) -> list[UUID]:
 
 def foo():
     cmd = CreateSourceNode()
-    execute(cmd)
+    source_uuid = execute(cmd)
+
+    create_wire_cmd = CreateWireNode(sender=1, receiver=2, amount=777, source_id=source_uuid)
+    wire_uuid = execute(create_wire_cmd)
 
 
 def execute(cmd):
     bus = MessageBus()
     bus.push_command(cmd)
     bus.run()
+    result = bus.results[cmd.get_uuid()]
+    return result
 
 
 if __name__ == '__main__':

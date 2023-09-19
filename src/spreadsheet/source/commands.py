@@ -17,5 +17,11 @@ class CreateSourceNode(Command):
         source = usecases.create_node()
         self._result = source.uuid
 
+    def get_uuid(self) -> UUID:
+        return self.uuid
+
+    def get_result(self):
+        return self._result
+
     def parse_new_events(self) -> list[Event]:
         return []
