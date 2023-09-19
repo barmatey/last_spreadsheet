@@ -1,8 +1,8 @@
-from spread.abstract.node import MessageBus
 from spread.source.commands import CreateSourceNode
+from messagebus.msgbus import SourceMsgbus
 from spread.source.repository import SourceNodeRepo
 
-msgbus = MessageBus()
+msgbus = SourceMsgbus()
 source_node_repo = SourceNodeRepo()
 
 
@@ -15,9 +15,8 @@ def foo():
 
 
 def execute(cmd):
-    bus = MessageBus()
-    bus.push_command(cmd)
-    bus.run()
+    msgbus.push_command(cmd)
+    msgbus.run()
 
 
 if __name__ == '__main__':

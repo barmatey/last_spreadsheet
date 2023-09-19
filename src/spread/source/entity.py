@@ -7,6 +7,8 @@ from spread.abstract.node import Node, MessageBus
 from spread.abstract.pydantic_model import PydanticModel
 from spread.wire.entity import Wire
 
+from . import events
+
 
 class Source(PydanticModel):
     wires: list[Wire] = Field(default_factory=list)
@@ -14,10 +16,12 @@ class Source(PydanticModel):
 
 
 class SourceNode(Node):
-    def __init__(self, value: PydanticModel, messagebus: MessageBus, subs: set[Node], uuid: UUID = None):
+    def __init__(self, value: Source, messagebus: MessageBus, subs: set[Node], uuid: UUID = None):
         super().__init__(value, messagebus, subs, uuid)
         self._old_wire = None
         self._new_wire = None
+
+        self._messagebus.push_event(events.TestSourceEvent(node=self))
 
     def __repr__(self):
         return f"SourceNode"

@@ -1,9 +1,5 @@
-import typing
 from abc import ABC, abstractmethod
-from collections import deque
 from uuid import UUID, uuid4
-
-from helpers.decorators import singleton
 from spread.abstract.pydantic_model import PydanticModel
 
 
@@ -17,26 +13,19 @@ class Event:
     pass
 
 
-@singleton
 class MessageBus(ABC):
-    def __init__(self):
-        self._commands: deque[Command] = deque()
-        self._events: deque[Event] = deque()
-        self.results: dict[UUID, PydanticModel] = {}
 
+    @abstractmethod
     def push_command(self, cmd: Command):
-        self._commands.append(cmd)
+        raise NotImplemented
 
+    @abstractmethod
     def push_event(self, event: Event):
-        self._events.append(event)
+        raise NotImplemented
 
+    @abstractmethod
     def run(self):
-        while self._commands:
-            cmd = self._commands.popleft()
-            self.results[cmd.uuid] = cmd.execute()
-
-            while self._events:
-                event = self._events.popleft()
+        raise NotImplemented
 
 
 class Node(ABC):

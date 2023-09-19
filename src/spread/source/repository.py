@@ -21,3 +21,6 @@ class SourceNodeRepo:
 
     def get_by_id(self, uuid: UUID) -> SourceNode:
         return self._data[uuid]
+
+    def remove(self, node: SourceNode):
+        del self._data[node.uuid]

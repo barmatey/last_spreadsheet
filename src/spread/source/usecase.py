@@ -1,8 +1,11 @@
 from uuid import UUID
 
+from loguru import logger
+
 from spread.abstract.node import MessageBus
-from spread.source.entity import Source, SourceNode
-from spread.source.repository import SourceNodeRepo
+from .entity import Source, SourceNode
+from .repository import SourceNodeRepo
+from . import events
 
 
 class CreateNode:
@@ -15,6 +18,15 @@ class CreateNode:
         node = SourceNode(value, self._msgbus, set())
         SourceNodeRepo().add(node)
         return node
+
+
+class RemoveNode:
+    def __init__(self, node: SourceNode, repo: SourceNodeRepo):
+        self._node = node
+        self._repo = repo
+
+    def execute(self):
+        self._repo.remove(self._node)
 
 
 def get_node_by_id(uuid: UUID) -> SourceNode:
