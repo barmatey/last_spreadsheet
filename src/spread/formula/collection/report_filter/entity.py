@@ -46,8 +46,6 @@ class ReportFilterNode(FormulaNode):
     def on_unsubscribe(self):
         logger.warning("Unsubscribe method")
         self._parents_count -= 1
-        if self._parents_count == 0:
-            raise ReferenceError
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(old_data, PlanItems):
