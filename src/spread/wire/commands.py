@@ -31,7 +31,7 @@ class CreateWireNode(Command):
         wire_node.subscribe([source_node])
 
         # Save
-        source_usecase.save_node(source_node)
+        source_usecase.save_node(source_node)  # Should I do this?
         wire_usecase.save_node(wire_node)
 
         # Result

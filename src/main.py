@@ -1,19 +1,15 @@
 import random
-import sys
-from copy import deepcopy
-from uuid import uuid4, UUID
+from uuid import UUID
 
-import pandas as pd
 from loguru import logger
 #
 # logger.remove(0)
 # logger.add(sys.stderr, level="INFO")
 from spread.formula.repository import FormulaNodeRepo
-from spread.sheet.commands import CreatePlanItemsNode, CreateReportFilters
+from spread.formula.collection.report_filter.commands import CreateReportFilters
+from spread.formula.collection.plan_items.commands import CreatePlanItemsNode
 from spread.source.commands import CreateSourceNode
-from spread.source.repository import SourceRepo
 from spread.wire.commands import CreateWireNode, UpdateWireNode
-from spread.wire.repository import WireNodeRepo
 
 
 def create_wires(source_id: UUID) -> list[UUID]:

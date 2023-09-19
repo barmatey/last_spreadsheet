@@ -119,5 +119,5 @@ class PlanItemsNode(FormulaNode):
 
     def unsubscribe(self, subs: set[Subscriber]):
         for sub in subs:
-            self._subs.remove(sub)
             sub.on_unsubscribe()
+            self._subs.remove(sub)
