@@ -30,7 +30,6 @@ class SourceNode(PydanticModel, Pubsub):
 
     def on_complete(self):
         logger.debug("SourceNode.on_complete()")
-        # self.events.append()
 
     def subscribe(self, subs: list[Subscriber]):
         raise NotImplemented

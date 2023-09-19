@@ -9,6 +9,10 @@ class Subscriber(ABC):
         raise NotImplemented
 
     @abstractmethod
+    def on_unsubscribe(self):
+        raise NotImplemented
+
+    @abstractmethod
     def on_subscribe(self, data: PydanticModel):
         raise NotImplemented
 

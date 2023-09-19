@@ -26,6 +26,9 @@ class WireNode(Pubsub):
     def on_subscribe(self, data: PydanticModel):
         raise NotImplemented
 
+    def on_unsubscribe(self):
+        raise NotImplemented
+
     def on_update(self, _old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(new_data, Wire):
             raise TypeError

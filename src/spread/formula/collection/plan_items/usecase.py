@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from spread.abstract.pubsub import Subscriber
 from spread.formula.collection.plan_items.entity import PlanItemsNode, PlanItems
 from spread.formula.repository import FormulaNodeRepo
 from spread.wire.entity import Ccol

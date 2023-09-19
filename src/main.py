@@ -1,43 +1,58 @@
 import random
+import sys
+from copy import deepcopy
+from uuid import uuid4, UUID
 
-from uuid import UUID
-
+import pandas as pd
 from loguru import logger
-
-from spreadsheet.broker.messagebus import MessageBus
-from spreadsheet.source.commands import CreateSourceNode
-from spreadsheet.wire.commands import CreateWireNode
+#
+# logger.remove(0)
+# logger.add(sys.stderr, level="INFO")
+from spread.formula.repository import FormulaNodeRepo
+from spread.sheet.commands import CreatePlanItemsNode, CreateReportFilters
+from spread.source.commands import CreateSourceNode
+from spread.source.repository import SourceRepo
+from spread.wire.commands import CreateWireNode, UpdateWireNode
+from spread.wire.repository import WireNodeRepo
 
 
 def create_wires(source_id: UUID) -> list[UUID]:
-    # commands = []
-    # for i in range(0, 4):
-    #     commands.append(
-    #         CreateWireNode(sender=i, receiver=i + 3, sub1=f"MySubconto", amount=random.random(), source_id=source_id)
-    #     )
-    # results = []
-    # for cmd in commands:
-    #     cmd.execute()
-    #     results.append(cmd.result())
+    commands = []
+    for i in range(0, 4):
+        commands.append(
+            CreateWireNode(sender=i, receiver=i + 3, sub1="Hello", amount=random.random(), source_id=source_id)
+        )
+    results = []
+    for cmd in commands:
+        cmd.execute()
+        results.append(cmd.result())
 
-    # return results
-    pass
+    return results
 
 
 def foo():
+    formula_repo: FormulaNodeRepo = FormulaNodeRepo()
+
     cmd = CreateSourceNode()
-    source_uuid = execute(cmd)
+    cmd.execute()
+    source_node_id = cmd.result()
 
-    create_wire_cmd = CreateWireNode(sender=1, receiver=2, amount=777, source_id=source_uuid)
-    wire_uuid = execute(create_wire_cmd)
+    wire_ids = create_wires(source_node_id)
+    wire_id = wire_ids[0]
 
+    cmd = CreatePlanItemsNode(source_id=source_node_id, ccols=['sender', 'sub1'])
+    cmd.execute()
+    plan_items_id = cmd.result()
 
-def execute(cmd):
-    bus = MessageBus()
-    bus.push_command(cmd)
-    bus.run()
-    result = bus.results[cmd.get_uuid()]
-    return result
+    cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
+    cmd.execute()
+
+    cmd = UpdateWireNode(uuid=wire_id, sender=1)
+    cmd.execute()
+
+    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id)._subs}")
+    for sub in formula_repo.get_by_id(plan_items_id)._subs:
+        logger.success(f"filter_by: {sub._value.filter_by}")
 
 
 if __name__ == '__main__':

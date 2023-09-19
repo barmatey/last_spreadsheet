@@ -31,10 +31,10 @@ class PlanItems(Formula):
 
 
 class PlanItemsNode(FormulaNode):
-    def __init__(self, value: PlanItems, subs: list[Subscriber] = None, uuid: UUID = None):
+    def __init__(self, value: PlanItems, subs: set[Subscriber] = None, uuid: UUID = None):
         self._value = value
         self._old_value: PlanItems | None = None
-        self._subs = subs if subs is not None else []
+        self._subs = subs if subs is not None else set()
         self.uuid = uuid if uuid is not None else uuid4()
 
     def __repr__(self):
@@ -47,7 +47,7 @@ class PlanItemsNode(FormulaNode):
         return self._old_value
 
     def get_subs(self) -> list[Subscriber]:
-        return self._subs
+        return list(self._subs)
 
     def on_before_start(self):
         self._old_value = self._value.model_copy(deep=True)
@@ -62,6 +62,9 @@ class PlanItemsNode(FormulaNode):
             self._value.uniques[key] = 1
         else:
             self._value.uniques[key] += 1
+
+    def on_unsubscribe(self):
+        raise NotImplemented
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(old_data, Wire):
@@ -95,10 +98,16 @@ class PlanItemsNode(FormulaNode):
         self.notify()
 
     def notify(self):
+        subs_to_detach = set()
         for sub in self._subs:
-            sub.on_before_start()
-            sub.on_update(self._old_value, self._value)
-            sub.on_complete()
+            try:
+                sub.on_before_start()
+                sub.on_update(self._old_value, self._value)
+                sub.on_complete()
+            except IndexError:
+                logger.warning("IndexIsOutOfRange")
+                subs_to_detach.add(sub)
+        self.unsubscribe(subs_to_detach)
 
     def subscribe(self, subs: list[Subscriber]):
         logger.debug(f"PlanItemsNode.subscribe({subs})")
@@ -106,7 +115,9 @@ class PlanItemsNode(FormulaNode):
             sub.on_before_start()
             sub.on_subscribe(self._value)
             sub.on_complete()
-            self._subs.append(sub)
+            self._subs.add(sub)
 
-    def unsubscribe(self, subs: list[Subscriber]):
-        raise NotImplemented
+    def unsubscribe(self, subs: set[Subscriber]):
+        for sub in subs:
+            self._subs.remove(sub)
+            sub.on_unsubscribe()

@@ -27,6 +27,9 @@ class SourceNode(Pubsub):
         if isinstance(data, Wire):
             self._value.wires.append(data)
 
+    def on_unsubscribe(self):
+        raise NotImplemented
+
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if isinstance(old_data, Wire) and isinstance(new_data, Wire):
             self._old_wire = old_data
