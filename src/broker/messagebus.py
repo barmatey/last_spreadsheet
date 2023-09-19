@@ -3,21 +3,13 @@ from uuid import UUID
 
 from loguru import logger
 
+from helpers.decorators import singleton
 from spread.abstract.command import Command
 from spread.abstract.event import Event
+from .handler import handle
 
 
-def parse_events(results: list) -> set[Event]:
-    events = set()
-    for result in results:
-        events = events | result.parse_events()
-    return events
-
-
-def handle(event: Event):
-    pass
-
-
+@singleton
 class MessageBus:
     def __init__(self):
         self._events: deque[Event] = deque()
@@ -34,9 +26,8 @@ class MessageBus:
         while self._commands:
             cmd = self._commands.popleft()
             results = cmd.execute()
-            self._events.extend(parse_events(results))
             self.results[cmd.uuid] = results
 
             while self._events:
                 event = self._events.popleft()
-                logger.error(event)
+                handle(event)

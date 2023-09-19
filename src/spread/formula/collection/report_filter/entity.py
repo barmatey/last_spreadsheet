@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 from loguru import logger
 from pydantic import Field
 
+from broker.messagebus import MessageBus
 from spread.abstract.pubsub import Subscriber
 from spread.abstract.pydantic_model import PydanticModel
 from spread.formula.collection.plan_items.entity import PlanItems
@@ -18,13 +19,14 @@ class ReportFilter(Formula):
 
 
 class ReportFilterNode(FormulaNode):
-    def __init__(self, value: ReportFilter, parents_count = 0, subs: list[Subscriber] = None, uuid: UUID = None):
+    def __init__(self, value: ReportFilter, parents_count=0, subs: list[Subscriber] = None, uuid: UUID = None):
         super().__init__(uuid)
         self._value = value
         self._old_value = None
         self._subs = subs if subs is not None else []
         self._parents_count = parents_count
         self.uuid = uuid if uuid is not None else uuid4()
+        self._messagebus = MessageBus()
 
     def __repr__(self):
         return "ReportFilterNode"
@@ -46,11 +48,9 @@ class ReportFilterNode(FormulaNode):
         self._parents_count += 1
 
     def on_unsubscribe(self):
-        logger.warning("Unsubscribe method")
         self._parents_count -= 1
         if self._parents_count == 0:
-            logger.warning("create an event")
-            self._events.add(ReportFilterDestroyed(uuid=self.uuid))
+            self._messagebus.push_event(ReportFilterDestroyed(self))
 
     def on_update(self, old_data: PydanticModel, new_data: PydanticModel):
         if not isinstance(old_data, PlanItems):

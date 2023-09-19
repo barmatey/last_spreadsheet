@@ -1,19 +1,12 @@
 from abc import ABC, abstractmethod
 from uuid import UUID, uuid4
 
-from spread.abstract.event import Event
 from spread.abstract.pydantic_model import PydanticModel
 
 
 class __Base:
     def __init__(self, uuid: UUID | None):
         self.uuid = uuid if uuid is not None else uuid4()
-        self._events = set()
-
-    def parse_events(self) -> set[Event]:
-        events = self._events
-        self._events = set()
-        return events
 
 
 class Subscriber(__Base, ABC):
