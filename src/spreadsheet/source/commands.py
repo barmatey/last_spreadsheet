@@ -3,8 +3,8 @@ from uuid import UUID, uuid4
 from loguru import logger
 from pydantic import Field
 
-from spreadsheet.broker.command import Command
-from spreadsheet.broker.event import Event
+from spreadsheet.abstract.command import Command
+from spreadsheet.abstract.event import Event
 from . import usecases
 
 

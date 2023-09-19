@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from spreadsheet.broker.event import Event
+from spreadsheet.abstract.event import Event
 
 
 class Handler(ABC):

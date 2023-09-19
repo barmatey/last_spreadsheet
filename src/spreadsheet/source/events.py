@@ -1,4 +1,4 @@
-from spreadsheet.broker.event import Event
+from spreadsheet.abstract.event import Event
 
 
 class SourceNodeUpdated(Event):

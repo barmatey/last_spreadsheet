@@ -2,7 +2,7 @@ from abc import abstractmethod
 from uuid import UUID
 
 from spreadsheet.abstract.pydantic_model import PydanticModel
-from spreadsheet.broker.event import Event
+from spreadsheet.abstract.event import Event
 
 
 class Command(PydanticModel):

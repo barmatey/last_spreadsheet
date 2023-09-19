@@ -1,7 +1,7 @@
 from collections import deque
 
-from .command import Command
-from .event import Event
+from spreadsheet.abstract.command import Command
+from spreadsheet.abstract.event import Event
 from .handler import Handler
 from ..abstract.pubsub import Subscriber
 

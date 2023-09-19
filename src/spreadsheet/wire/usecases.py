@@ -2,6 +2,7 @@ from uuid import UUID
 
 from .entity import WireNode, Wire
 from .repository import WireNodeRepo
+from ..abstract.pubsub import Subscriber
 
 
 def create_node(data: dict) -> WireNode:

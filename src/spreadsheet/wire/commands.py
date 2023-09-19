@@ -4,8 +4,8 @@ from uuid import uuid4, UUID
 from loguru import logger
 from pydantic import Field
 
-from spreadsheet.broker.command import Command
-from spreadsheet.broker.event import Event
+from spreadsheet.abstract.command import Command
+from spreadsheet.abstract.event import Event
 
 from spreadsheet.source import usecases as source_usecase
 from spreadsheet.wire import usecases as wire_usecase
@@ -46,6 +46,6 @@ class CreateWireNode(Command):
         return self.result
 
     def parse_new_events(self) -> list[Event]:
-        events = self._new_events
+        events = self.new_events
         self.new_events = []
         return events
