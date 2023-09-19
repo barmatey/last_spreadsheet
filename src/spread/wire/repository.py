@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from helpers.decorators import singleton
-from spread.wire.node import WireNode
+from spread.wire.entity import WireNode
 
 
 @singleton

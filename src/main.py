@@ -1,53 +1,17 @@
-import random
-from uuid import UUID
-
-from loguru import logger
-#
-# logger.remove(0)
-# logger.add(sys.stderr, level="INFO")
-from broker.messagebus import MessageBus
-from spread.formula.collection.report_filter.usecase import CreateReportFilters
-from spread.formula.repository import FormulaNodeRepo
-from spread.formula.collection.plan_items.commands import CreatePlanItemsNode
+from spread.abstract.node import MessageBus
 from spread.source.commands import CreateSourceNode
-from spread.wire.commands import CreateWireNode, UpdateWireNode
+from spread.source.repository import SourceNodeRepo
 
-
-def create_wires(source_id: UUID) -> list[UUID]:
-    commands = []
-    for i in range(0, 4):
-        commands.append(
-            CreateWireNode(sender=i, receiver=i + 3, sub1="Hello", amount=random.random(), source_id=source_id)
-        )
-    results = []
-    for cmd in commands:
-        temp = cmd.execute()
-        results.append(temp[0].uuid)
-
-    return results
+msgbus = MessageBus()
+source_node_repo = SourceNodeRepo()
 
 
 def foo():
-    formula_repo: FormulaNodeRepo = FormulaNodeRepo()
-
-    cmd = CreateSourceNode()
-    source_node_id = cmd.execute()[0].uuid
-
-    wire_ids = create_wires(source_node_id)
-    wire_id = wire_ids[0]
-
-    cmd = CreatePlanItemsNode(source_id=source_node_id, ccols=['sender', 'sub1'])
-    plan_items_id = cmd.execute()[0].uuid
-
-    cmd = CreateReportFilters(plan_items_uuid=plan_items_id)
-    cmd.execute()
-
-    cmd = UpdateWireNode(uuid=wire_id, sender=1)
+    cmd = CreateSourceNode(msgbus=msgbus, repo=source_node_repo)
     execute(cmd)
 
-    logger.success(f"plan_items_subs: {formula_repo.get_by_id(plan_items_id)._subs}")
-    for sub in formula_repo.get_by_id(plan_items_id)._subs:
-        logger.success(f"filter_by: {sub._value.filter_by}")
+    for key, value in msgbus.results.items():
+        print(f"{key}:{value}")
 
 
 def execute(cmd):

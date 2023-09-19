@@ -1,16 +1,20 @@
 from uuid import UUID
 
-from spread.source.entity import Source
-from spread.source.node import SourceNode
+from spread.abstract.node import MessageBus
+from spread.source.entity import Source, SourceNode
 from spread.source.repository import SourceNodeRepo
 
 
-def create_node() -> SourceNode:
-    source = Source()
-    node = SourceNode(source)
-    repo = SourceNodeRepo()
-    repo.add(node)
-    return node
+class CreateNode:
+    def __init__(self, repo: SourceNodeRepo, messagebus: MessageBus):
+        self._repo = repo
+        self._msgbus = messagebus
+
+    def execute(self) -> SourceNode:
+        value = Source()
+        node = SourceNode(value, self._msgbus, set())
+        SourceNodeRepo().add(node)
+        return node
 
 
 def get_node_by_id(uuid: UUID) -> SourceNode:

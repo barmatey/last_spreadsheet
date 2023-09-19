@@ -5,8 +5,9 @@ from uuid import UUID, uuid4
 from loguru import logger
 from pydantic import Field
 
-from spread.abstract.command import Command
-from spread.abstract.pubsub import Pubsub
+from spread.abstract.node import Command
+from spread.abstract.pydantic_model import PydanticModel
+
 from spread.source import usecase as source_usecase
 from spread.wire import usecase as wire_usecase
 
@@ -23,7 +24,7 @@ class CreateWireNode(Command):
     date: datetime = Field(default_factory=datetime.now)
     uuid: UUID = Field(default_factory=uuid4)
 
-    def execute(self) -> list[Pubsub]:
+    def execute(self) -> list[PydanticModel]:
         logger.info("CreateWireNode.execute()")
         # Execute
         source_node = source_usecase.get_node_by_id(self.source_id)

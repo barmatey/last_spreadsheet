@@ -1,12 +1,42 @@
 import typing
 from abc import ABC, abstractmethod
+from collections import deque
 from uuid import UUID, uuid4
 
+from helpers.decorators import singleton
 from spread.abstract.pydantic_model import PydanticModel
 
 
-class MessageBus(ABC):
+class Command(PydanticModel):
+    @abstractmethod
+    def execute(self) -> PydanticModel:
+        raise NotImplemented
+
+
+class Event:
     pass
+
+
+@singleton
+class MessageBus(ABC):
+    def __init__(self):
+        self._commands: deque[Command] = deque()
+        self._events: deque[Event] = deque()
+        self.results: dict[UUID, PydanticModel] = {}
+
+    def push_command(self, cmd: Command):
+        self._commands.append(cmd)
+
+    def push_event(self, event: Event):
+        self._events.append(event)
+
+    def run(self):
+        while self._commands:
+            cmd = self._commands.popleft()
+            self.results[cmd.uuid] = cmd.execute()
+
+            while self._events:
+                event = self._events.popleft()
 
 
 class Node(ABC):
@@ -22,6 +52,10 @@ class Node(ABC):
         self._messagebus = messagebus
         self._subs: set['Node'] = subs if subs is not None else set()
         self.uuid = uuid if uuid is not None else uuid4()
+
+    @property
+    def value(self):
+        return self._value
 
     def append_subscribers(self, subs: set['Node']):
         for sub in subs:
