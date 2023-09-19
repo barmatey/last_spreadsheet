@@ -1,11 +1,14 @@
-from spread.abstract.node import Event
+import typing
+
+from spread.abstract.node import Event, EventHandler
 from spread.abstract.pydantic_model import PydanticModel
-from spread.source import events as source_events, usecase as source_handlers
+from spread.source import entity as source_domain, handlers as source_handlers
 
 
 def handle(event: Event) -> PydanticModel:
-    selector = {
-        source_events.TestSourceEvent: source_handlers.RemoveNode,
+    selector: dict[typing.Type[Event], typing.Type[EventHandler]] = {
+        source_domain.TestSourceEvent: source_handlers.TestSourceEventHandler,
     }
     handler = selector[type(event)]
-    result = handler(event)
+    result = handler().handle(event)
+    return result

@@ -7,8 +7,6 @@ from helpers.decorators import singleton
 from spread.abstract.node import MessageBus, Command, Event
 from spread.abstract.pydantic_model import PydanticModel
 
-from spread.source import usecase
-
 from .handlers import handle
 
 

@@ -1,13 +1,12 @@
+from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from loguru import logger
 from pydantic import Field
 
-from spread.abstract.node import Node, MessageBus
+from spread.abstract.node import Node, MessageBus, Event
 from spread.abstract.pydantic_model import PydanticModel
 from spread.wire.entity import Wire
-
-from . import events
 
 
 class Source(PydanticModel):
@@ -21,7 +20,7 @@ class SourceNode(Node):
         self._old_wire = None
         self._new_wire = None
 
-        self._messagebus.push_event(events.TestSourceEvent(node=self))
+        self._messagebus.push_event(TestSourceEvent(node=self))
 
     def __repr__(self):
         return f"SourceNode"
@@ -38,7 +37,7 @@ class SourceNode(Node):
         if isinstance(old_data, Wire) and isinstance(new_data, Wire):
             self._old_wire = old_data
             self._new_wire = new_data
-            for i, wire in enumerate(self._value.wires):
+            for i, wire in enumerate(self.value.wires):
                 if wire.uuid == new_data.uuid:
                     self._value.wires[i] = new_data
                     return
@@ -56,7 +55,13 @@ class SourceNode(Node):
         logger.debug(f"SourceNode.subscribe({subs})")
         for sub in subs:
             sub.on_before_start()
-            for wire in self._value.wires:
+            for wire in self.value.wires:
                 sub.on_subscribe(wire)
             sub.on_complete()
             self._subs.add(sub)
+
+
+@dataclass
+class TestSourceEvent(Event):
+    node: SourceNode
+

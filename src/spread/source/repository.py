@@ -9,6 +9,9 @@ class SourceNodeRepo:
     def __init__(self):
         self._data = {}
 
+    def get_all(self) -> list[SourceNode]:
+        return list(self._data.values())
+
     def add(self, data: SourceNode):
         if self._data.get(data.uuid) is not None:
             raise Exception

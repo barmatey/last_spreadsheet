@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from loguru import logger
 
 from broker.messagebus import MessageBus
-from . import usecase
+from . import usecases
 from .repository import SourceNodeRepo
 from ..abstract.node import Command
 from ..abstract.pydantic_model import PydanticModel
@@ -17,5 +17,5 @@ class CreateSourceNode(Command):
     uuid: UUID = field(default_factory=uuid4)
 
     def execute(self) -> PydanticModel:
-        node = usecase.CreateNode(self.repo, self.msgbus).execute()
+        node = usecases.CreateNode(self.repo, self.msgbus).execute()
         return node.value

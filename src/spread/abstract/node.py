@@ -1,3 +1,4 @@
+import typing
 from abc import ABC, abstractmethod
 from uuid import UUID, uuid4
 from spread.abstract.pydantic_model import PydanticModel
@@ -11,6 +12,11 @@ class Command(PydanticModel):
 
 class Event:
     pass
+
+
+class EventHandler(ABC):
+    def handle(self, event: Event):
+        raise NotImplemented
 
 
 class MessageBus(ABC):
@@ -28,10 +34,13 @@ class MessageBus(ABC):
         raise NotImplemented
 
 
-class Node(ABC):
+T = typing.TypeVar("T", bound=PydanticModel)
+
+
+class Node(ABC, typing.Generic[T]):
     def __init__(
             self,
-            value: PydanticModel,
+            value: T,
             messagebus: MessageBus,
             subs: set['Node'] = None,
             uuid: UUID = None
@@ -43,7 +52,7 @@ class Node(ABC):
         self.uuid = uuid if uuid is not None else uuid4()
 
     @property
-    def value(self):
+    def value(self) -> T:
         return self._value
 
     def append_subscribers(self, subs: set['Node']):

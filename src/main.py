@@ -1,3 +1,5 @@
+from loguru import logger
+
 from spread.source.commands import CreateSourceNode
 from messagebus.msgbus import SourceMsgbus
 from spread.source.repository import SourceNodeRepo
@@ -10,8 +12,7 @@ def foo():
     cmd = CreateSourceNode(msgbus=msgbus, repo=source_node_repo)
     execute(cmd)
 
-    for key, value in msgbus.results.items():
-        print(f"{key}:{value}")
+    logger.success(source_node_repo.get_all())
 
 
 def execute(cmd):

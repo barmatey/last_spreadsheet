@@ -5,7 +5,6 @@ from loguru import logger
 from spread.abstract.node import MessageBus
 from .entity import Source, SourceNode
 from .repository import SourceNodeRepo
-from . import events
 
 
 class CreateNode:
