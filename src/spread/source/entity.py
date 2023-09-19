@@ -64,4 +64,3 @@ class SourceNode(Node):
 @dataclass
 class TestSourceEvent(Event):
     node: SourceNode
-

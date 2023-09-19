@@ -1,6 +1,9 @@
 import typing
 from abc import ABC, abstractmethod
 from uuid import UUID, uuid4
+
+from loguru import logger
+
 from spread.abstract.pydantic_model import PydanticModel
 
 
